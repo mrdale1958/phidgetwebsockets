@@ -1,0 +1,9 @@
+#!/bin/bash
+cd /var/www/html/LosMochisTilty
+
+while true
+do
+
+	python3 tiltyserver.py 2>> tiltyserver_errors 1>> tiltyserver_output
+	sleep 30
+done

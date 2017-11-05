@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+  </head>
+  <body>
+    <div id="map" style="width: 600px; height: 600px;"></div>
+    <script type="text/javascript">
+
+      var map = L.map('map').setView([45.8167, 15.9833], 10);
+      var mbUrl = 'https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png';
+      L.tileLayer(mbUrl, {id: 'examples.map-i875mjb7'}).addTo(map);
+      var marker = L.marker([45.8167, 15.9833]).bindPopup("Zagreb").addTo(map);
+
+    </script>
+  </body>
+</html>

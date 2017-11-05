@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Los Mochis Tilty</title>
+<title>GeoConnecTable</title> 
+  <meta content="initial-scale=1.0, user-scalable=no" name="viewport" /> 
+  <meta charset="utf-8" /> 
+   <style>
+            #iw_bodyContent {
+                background-color: #b0c4de;
+            }
+            html, body{
+                 height: 100%;
+               margin: 0px;
+                padding: 0px;
+                 background-color: black;
+           }
+            #map-canvas {
+                height: 1080px;
+                width : 1080px;
+                margin-left: 420px;
+            }
+            #map-mask {
+               position:fixed;
+                top: 0px;
+                left:420px;
+                pointer-events: none;
+
+            }
+            .instructions {
+                border-color: red;
+                border-width: 2px;
+               position:fixed;
+                top: 400px;
+                left:820px;
+                
+            }
+            .instructions .spanish {
+                
+            }
+            .instructions .english {
+                font-style:italic;
+                
+            }
+            .overview {
+                border-color: blue;
+                 border-width: 2px;
+              position:fixed;
+                top: 400px;
+                left:820px;
+            }
+            .overview .spanish {
+                
+            }
+            .overview .english {
+                font-style:italic;
+                
+            }
+            .state {
+                border-color: green;
+                border-width: 2px;
+               position:fixed;
+                top: 400px;
+                left:820px;
+            }
+            .state .site_name {
+                font-weight: bold;
+                
+            }
+            .state .spanish {
+                
+            }
+            .state .english {
+                 font-style:italic;
+               
+            }
+            .county {
+               position:fixed;
+                top: 400px;
+                left:820px;
+                border-color: magenta;
+                border-width: 2px;
+            }
+           .county .site_name {
+                
+            }
+            .county .spanish {
+                
+            }
+            .county .english {
+                 font-style:italic;
+               
+            }
+            .city {
+               position:fixed;
+                top: 400px;
+                left:820px;
+                border-color: yellow;
+                border-width: 2px;
+            }
+           .city .site_name {
+                
+            }
+            .city .spanish {
+                
+            }
+            .city .english {
+                 font-style:italic;
+               
+            }
+
+            #site1 {
+                display:none;
+            }
+           #site2 {
+                display:none;
+            }
+           #site3 {
+                display:none;
+            }
+           #site4 {
+                display:none;
+            }
+           #site5 {
+                display:none;
+            }
+           #site6 {
+                display:none;
+            }
+           #site7 {
+                display:none;
+            }
+           #site8 {
+                display:none;
+            }
+           #site9 {
+                display:none;
+            }
+           #site10 {
+                display:none;
+            }
+           #site11 {
+                display:none;
+            }
+           #site12 {
+                display:none;
+            }
+           #site13 {
+                display:none;
+            }
+           #site14 {
+                display:none;
+            }
+           #site15 {
+                display:none;
+            }
+           #site16 {
+                display:none;
+            }
+           #site17 {
+                display:none;
+            }
+
+#container { margin: 5%; }
+
+#circle { position: relative; width: 100%; padding-bottom: 100%; overflow: hidden; pointer-events:none;}
+
+#circle text { font-family: 'Helvetica Neue', Arial; font-size: 36px; font-weight: bold; }
+
+#circle svg { position: fixed; left: 420px; top: 0; width: 1080px; height: 1080px; }
+#circlespinning svg { position: fixed; left: 0; top: 0; width: 100%; height: 100%;
+
+  -webkit-animation-name: rotate;
+     -moz-animation-name: rotate;
+      -ms-animation-name: rotate;
+       -o-animation-name: rotate;
+          animation-name: rotate;
+  -webkit-animation-duration: 5s;
+     -moz-animation-duration: 5s;
+      -ms-animation-duration: 5s;
+       -o-animation-duration: 5s;
+          animation-duration: 5s;
+  -webkit-animation-iteration-count: infinite;
+     -moz-animation-iteration-count: infinite;
+      -ms-animation-iteration-count: infinite;
+       -o-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+     -moz-animation-timing-function: linear;
+      -ms-animation-timing-function: linear;
+       -o-animation-timing-function: linear;
+          animation-timing-function: linear;
+
+}
+
+@-webkit-keyframes rotate {
+    from { -webkit-transform: rotate(360deg); }
+    to { -webkit-transform: rotate(0); }
+}
+@-moz-keyframes rotate {
+    from { -moz-transform: rotate(360deg); }
+    to { -moz-transform: rotate(0); }
+}
+@-ms-keyframes rotate {
+    from { -ms-transform: rotate(360deg); }
+    to { -ms-transform: rotate(0); }
+}
+@-o-keyframes rotate {
+    from { -o-transform: rotate(360deg); }
+    to { -o-transform: rotate(0); }
+}
+@keyframes rotate {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0); }
+}        </style>   
+    </head>
+    <body>
+         <div id="map-canvas"></div>
+         <div id="map-mask"><img src="mask.png" width="1080" height="1080"/> </div>
+       <div>Encoder status: <div id="EncoderStatus"></div></div>
+       <div>EncoderID: <div id="EncoderID"></div></div>
+        <div>Index: <div id="EncoderIndex"></div> </div>
+        <div>Change:  <div id="EncoderDelta"> </div></div>
+        <div>Time:  <div id="EncoderElapsedTime"> </div></div>
+        <div>Position:  <div id="EncoderPosition"> </div></div>
+        <div>Tilt status: <div id="TiltStatus"></div></div>
+        <div>TiltsensorID: <div id="TiltsensorID"> </div></div>
+        <div>X: <div id="TiltX"> </div></div>
+        <div>Y:  <div id="TiltY"> </div></div>
+        <div>Magnitude:  <div id="TiltMagnitude"> </div></div>
+    <script>
+ var mapStyle = 
+[{"elementType":"labels.text","stylers":[{"visibility":"off"}]},{"featureType":"landscape.natural","elementType":"geometry.fill","stylers":[{"color":"#f5f5f2"},{"visibility":"on"}]},{"featureType":"administrative","stylers":[{"visibility":"off"}]},{"featureType":"transit","stylers":[{"visibility":"off"}]},{"featureType":"poi.attraction","stylers":[{"visibility":"off"}]},{"featureType":"landscape.man_made","elementType":"geometry.fill","stylers":[{"color":"#ffffff"},{"visibility":"on"}]},{"featureType":"poi.business","stylers":[{"visibility":"off"}]},{"featureType":"poi.medical","stylers":[{"visibility":"off"}]},{"featureType":"poi.place_of_worship","stylers":[{"visibility":"off"}]},{"featureType":"poi.school","stylers":[{"visibility":"off"}]},{"featureType":"poi.sports_complex","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#ffffff"},{"visibility":"simplified"}]},{"featureType":"road.arterial","stylers":[{"visibility":"simplified"},{"color":"#ffffff"}]},{"featureType":"road.highway","elementType":"labels.icon","stylers":[{"color":"#ffffff"},{"visibility":"off"}]},{"featureType":"road.highway","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.arterial","stylers":[{"color":"#ffffff"}]},{"featureType":"road.local","stylers":[{"color":"#ffffff"}]},{"featureType":"poi.park","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"water","stylers":[{"color":"#71c8d4"}]},{"featureType":"landscape","stylers":[{"color":"#e5e8e7"}]},{"featureType":"poi.park","stylers":[{"color":"#8ba129"}]},{"featureType":"road","stylers":[{"color":"#ffffff"}]},{"featureType":"poi.sports_complex","elementType":"geometry","stylers":[{"color":"#c7c7c7"},{"visibility":"off"}]},{"featureType":"water","stylers":[{"color":"#a0d3d3"}]},{"featureType":"poi.park","stylers":[{"color":"#91b65d"}]},{"featureType":"poi.park","stylers":[{"gamma":1.51}]},{"featureType":"road.local","stylers":[{"visibility":"off"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"visibility":"on"}]},{"featureType":"poi.government","elementType":"geometry","stylers":[{"visibility":"off"}]},{"featureType":"landscape","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"visibility":"simplified"}]},{"featureType":"road.local","stylers":[{"visibility":"simplified"}]},{"featureType":"road"},{"featureType":"road"},{},{"featureType":"road.highway"}] ;
+          var styledMapOptions = {
+                name : "GeoConnecTable"
+            }
+
+ 
+            var state_markers = [
+            {
+                lat : 40.72236263,
+                lng :-73.99310052,
+                title : "Let's SEE the Trash #1",
+                icon: "01.png",
+                ytEmbed : "https://www.youtube.com/embed/vAIKBjH7AxE?autoplay=1&controls=0&rel=0&fs=0&iv_load_policy=3&modestbranding=1&showinfo=0&start=0&end=15"
+            },
+
+            ]
+            var MARKERS = [];
+
+            var map = null;
+
+            var mapType = null;
+
+            var marker = null;
+
+            var views = [
+            { center: {lat: 40.722518, lng: -73.990933},
+                zoom : 14
+            },
+            { center: {lat: 40.722518, lng: -73.990933},
+                zoom : 15
+            },
+            { center: {lat: 40.722518, lng: -73.990933},
+                zoom : 16
+            },
+
+            ]
+
+
+
+            var zoomLayers = {
+              4 : { "Mexico" : false },
+              7 : { "Distrito Federal" : false, 
+                            "Sinaloa"  : false,
+                            "Chihuahua" : false,
+                            "Guerrero"  : false,
+                            "Veracruz de Ignacio de la Llave" : false },
+              
+              10: { "Escuinapa" : false,
+                            "Sinaloa"  : false,
+                            "Elota" : false,
+                            "El Fuerte" : false,
+                            "CuliacÃ¡n" : false,
+                            "Badiraguato" : false,
+                            "Guasave" : false,
+                            "San Ignacio" : false,
+                            "Concordia" : false,
+                            "Navolato" : false,
+                            "Mocorito" : false,
+                            "Rosario" : false,
+                            "Angostura" : false,
+                            "Choix" : false,
+                            "CosalÃ¡" : false,
+                            "MazatlÃ¡n" : false,
+                            "Salvador Alvarado" : false,
+                            "Ahome"  : false }
+
+            }
+            var trapiche = null;
+            var floatZoom = 14.0;
+            var mexicoCenter = null;
+            var mexicoFullZoom = 5;
+
+            function shapeloaded(features)
+            {
+              //console.log("got " + features.length + " new features");
+              console.log("is the feature add callback first? or the loadGeoJson");
+            }
+
+           function initialize() {
+                if (map == null) {
+                 var mapOptions = {
+                    center: mexicoCenter,
+                    zoom : mexicoFullZoom,
+                    disableDefaultUI: true,
+                    mapTypeId: google.maps.MapTypeId.HYBRID,
+                };
+                     //mapTypeId: google.maps.MapTypeId.HYBRID,
+                 map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+                    //mapType = new google.maps.StyledMapType(mapStyle, styledMapOptions);
+                    //map.mapTypes.set('geoconnectable', mapType);
+                    //map.setMapTypeId('geoconnectable');
+                    featuresets = {} ;
+                    map.data.addListener('addfeature', function(e) {
+                      var name = e.feature.getProperty("NOMGEO");
+                      if (! name ) 
+                      {
+                        name = e.feature.getProperty("NAME_FAO");
+                        if (! name ) name = "idunno";
+                      }
+                       featuresets[name] = e.feature;
+                       console.log(name);
+                       map.data.remove(e.feature);
+                       
+                    });
+
+                    map.addListener('zoom_changed', function()
+                    {
+                      console.log("got new zoom", map.getZoom(), zoomLayers[map.getZoom()])
+                    });
+                    mexicoCenter = new google.maps.LatLng(23.43348438907877, -103.05326881250002);
+                    trapiche = new google.maps.LatLng(25.790466,-108.985886);
+                    map.data.loadGeoJson('encuesta_intercensal_2015/shps/df/df_entidad.geojson', null, shapeloaded);
+                    map.data.loadGeoJson('encuesta_intercensal_2015/shps/sin/sin_entidad.geojson');
+                    map.data.loadGeoJson('encuesta_intercensal_2015/shps/chih/chih_entidad.geojson', null, shapeloaded);
+                    map.data.loadGeoJson('encuesta_intercensal_2015/shps/gro/gro_entidad.geojson', null, shapeloaded);
+                    map.data.loadGeoJson('encuesta_intercensal_2015/shps/ver/ver_entidad.geojson', null, shapeloaded);
+                    map.data.loadGeoJson('encuesta_intercensal_2015/shps/sin/sin_municipio.geojson', null, shapeloaded);
+                    map.data.loadGeoJson('MEX_adm0.geojson', null, shapeloaded);
+                    map.data.loadGeoJson('MEX_adm1.geojson', null, shapeloaded);
+                    map.data.loadGeoJson('MEX_adm2.geojson', null, shapeloaded);
+                    map.data.setStyle({
+                          fillColor: 'yellow',
+                          strokeWeight: 1
+                    });
+                    map.data.addListener('mouseover', function(event) {
+                      map.data.revertStyle();
+                      map.data.overrideStyle(event.feature, {strokeWeight: 8});
+                    });
+                    map.panTo(mexicoCenter);
+                    map.setZoom(mexicoFullZoom);
+
+                }
+            };
+            var ws = new WebSocket("ws://127.0.0.1:5678/"),
+                messages = document.createElement('ul'),
+                jsonData;
+            var currentScale = 1.0;
+            ws.onmessage = function (event) {
+                if (! map) return;
+                jsonData = JSON.parse(event.data);
+                if (jsonData.type == 'spin') {
+                    document.getElementById('EncoderID').innerHTML(jsonData.packet.sensorID);
+                    document.getElementById('EncoderIndex').innerHTML(jsonData.packet.encoderIndex);
+                    document.getElementById('EncoderDelta').innerHTML(jsonData.packet.encoderDelta);
+                    document.getElementById('EncoderElapsedTime').innerHTML(jsonData.packet.encoderElapsedTime);
+                    document.getElementById('EncoderPosition').innerHTML(jsonData.packet.encoderPosition);
+                } else if (jsonData.type == 'tilt') {
+                    document.getElementById('TiltsensorID').innerHTML(jsonData.packet.sensorID);
+                    document.getElementById('TiltX').innerHTML(jsonData.packet.tiltX);
+                    document.getElementById('TiltY').innerHTML(jsonData.packet.tiltY);
+                    document.getElementById('TiltMagnitude').innerHTML(jsonData.packet.tiltMagnitude);
+                } else if (jsonData.gesture == 'pan') {
+                    if (jsonData.vector.x == 0.0 && jsonData.vector.y == 0.0) return;
+                    var currentViewport = map.getBounds();
+                    var ne = currentViewport.getNorthEast();
+                    var sw = currentViewport.getSouthWest();
+                    var currentCenter = currentViewport.getCenter();
+                    var newCenter = {lat: -34, lng: 151};
+                    if (jsonData.vector.x > 0.0) {
+                        newCenter.lng = currentCenter.lng() + jsonData.vector.x * (sw.lng() - currentCenter.lng() );
+                    } else {
+                        newCenter.lng = currentCenter.lng() - jsonData.vector.x * (ne.lng() - currentCenter.lng() );
+
+                    }
+                    if (jsonData.vector.y > 0.0) {
+                        newCenter.lat = currentCenter.lat() + jsonData.vector.y * (ne.lat() - currentCenter.lat() );
+                    } else {
+                        newCenter.lat = currentCenter.lat() - jsonData.vector.y * (sw.lat() - currentCenter.lat() );
+                    }
+                    //console.log("panning to " + newCenter.lat + " " + newCenter.lng + " from " + currentCenter.lat() + "," + currentCenter.lng() + " data " + jsonData.vector.x +"," + jsonData.vector.y);
+                    map.panTo(newCenter);
+                } else if (jsonData.gesture == 'zoom') {
+                    var maxZoom = 19;
+                    var minZoom = 3;
+                    var clicksPerRev = 3.14159 * 4 * 256;
+                    var revsPerFullZoom = (maxZoom - minZoom)/2;
+                    var maxClicks = clicksPerRev * revsPerFullZoom * 1.0;
+                    var currentZoom = map.getZoom();
+                    floatZoom = Math.min(maxZoom,Math.max(minZoom, floatZoom * (1 + jsonData.vector.delta * (maxZoom - minZoom) / maxClicks )));
+                    if (Math.floor(floatZoom) != currentZoom) {
+                        document.getElementById('map-canvas').style.transform = "scale(1)";
+                        map.setZoom(Math.floor(floatZoom));
+                    }
+                    else 
+                    {
+                        var newScale = "scale(" + String(1.0 + floatZoom - Math.floor(floatZoom)) + ")";
+                        //console.log("zooming by " + floatZoom + " raw data " + jsonData.vector.delta + " fractional " + newScale);
+                        //document.getElementById('map-canvas').style.transform = newScale;
+                    }
+                    /*var currentViewport = map.getBounds();
+                    var currentCenter = currentViewport.getCenter();
+                    var ne = currentViewport.getNorthEast();
+                    var sw = currentViewport.getSouthWest();
+                    var deltaLat = (ne.lat()-sw.lat())*floatZoom/2;
+                    var deltaLng = (ne.lng()-sw.lng())*floatZoom/2;
+                    console.log(ne.lat(),sw.lat(),ne.lat()-sw.lat());
+                    var newSW = new google.maps.LatLng(currentCenter.lat()-deltaLat, currentCenter.lng()-deltaLng);
+                    var newNE = new google.maps.LatLng(currentCenter.lat()+deltaLat, currentCenter.lng()+deltaLng);
+                    var zoomedBounds = new google.maps.LatLngBounds(newSW, newNE);
+                    //console.log(newNE.lat(),newSW.lat(),newNE.lat()-newSW.lat());
+                    //console.log("zooming by " + floatZoom + " raw data " + jsonData.vector.delta + 
+                    //    " zoom from " + currentViewport + " to " + zoomedBounds +
+                    //    " delta " + deltaLat + "," + deltaLng);
+                    map.panToBounds(zoomedBounds);
+                    //map.panTo(currentCenter);
+                    //document.getElementById('map-canvas').style.transform = "scale(" + String(1.0 + floatZoom - Math.floor(floatZoom)) + ")";
+*/
+
+                    
+                } else { 
+                    var messages = document.getElementsByTagName('ul')[0],
+                        message = document.createElement('li'),
+                        content = document.createTextNode(event.data);
+                    message.appendChild(content);
+                    messages.appendChild(message);
+                }
+ var myLatLng = new google.maps.LatLng(25.790466,-108.985886);
+ var marker = new google.maps.Marker({
+    position: myLatLng,
+    map: map,
+    title: 'Click to zoom'
+  });
+
+  map.addListener('center_changed', function() {
+    // 3 seconds after the center of the map has changed, pan back to the
+    // marker.
+    //window.setTimeout(function() {
+    //  map.panTo(marker.getPosition());
+    //}, 3000);
+  });
+
+  marker.addListener('click', function() {
+    map.setZoom(8);
+    map.setCenter(marker.getPosition());
+  });  
+
+
+
+           };
+            document.body.appendChild(messages);
+            //google.maps.event.addDomListener(window, 'load', initialize);
+
+        </script>
+<div class="instructions">
+<div class="spanish">
+</div>
+<div class="english">
+ </div>
+</div> 
+ <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9mTlIuf4wMXE1q5aIyqFrnmi820eJedg&callback=initialize"
+    async defer></script>
+<div id="container">
+<div id="circle">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="420px" y="0px" width="1080px" height="1080px" viewBox="0 0 1080 1080" enable-background="new 0 0 1080 1080" xml:space="preserve">
+    <defs>
+    <!--
+    (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
+    -->
+        <path id="topArcPath" d=" M 1070, 0 m 0,540 a 400,400 0 1 0 -1060,0  "/>
+        <path id="bottomArcPath" d="  M 10, 0 m 0,540 a 400,-400 0 1 0 1060,0   "/>
+        <path id="leftArcPath" d=" M 540, 10 m 0,0 a 400,400 0 1,0 0,1060  "/>
+        <path id="rightArcPath" d="   M 540, 1070 m 0,0 a 400,400 0 1 0 0,-1060    "/>
+    </defs>
+    <g>
+        <use xlink:href="#topArcPath" fill="none"/>
+        <text fill="#f00">
+            <textPath id="northwesttext" xlink:href="#topArcPath">rotate clockwise to zoom in</textPath>
+        </text>
+    </g>
+    <g>
+        <use xlink:href="#leftArcPath" fill="none"/>
+        <text fill="#0f0">
+            <textPath id="northeasttext" xlink:href="#leftArcPath">tilt up/down to move north/south</textPath>
+        </text>
+    </g>
+    <g>
+        <use xlink:href="#bottomArcPath" fill="none"/>
+        <text fill="#00f">
+            <textPath id="southwesttext" xlink:href="#bottomArcPath">rotate counter clockwise to zoom in</textPath>
+        </text>
+    </g>
+   <g>
+        <use xlink:href="#rightArcPath" fill="none"/>
+        <text fill="#ff0">
+            <textPath id="southeasttext" xlink:href="#rightArcPath">tilt left/right to move east/west</textPath>
+        </text>
+    </g>
+</svg>
+</div>
+</div>
+
+<script>
+/*var canvas = document.getElementById('textRing');
+ var context = canvas.getContext('2d');
+ var x = canvas.width / 2;
+ var y = canvas.height / 2;
+ var radius = 75;
+ var endPercent = 85;
+ var curPerc = 0;
+ var counterClockwise = false;
+ var circ = Math.PI * 2;
+ var quart = Math.PI / 2;
+
+ context.lineWidth = 10;
+ context.strokeStyle = '#ad2323';
+ context.shadowOffsetX = 0;
+ context.shadowOffsetY = 0;
+ context.shadowBlur = 10;
+ context.shadowColor = '#656565';
+
+
+ function animate(current) {
+     context.clearRect(0, 0, canvas.width, canvas.height);
+     context.beginPath();
+     context.arc(x, y, radius, -(quart), ((circ) * current) - quart, false);
+     context.stroke();
+     curPerc++;
+     if (curPerc < endPercent) {
+         requestAnimationFrame(function () {
+             animate(curPerc / 100)
+         });
+     }
+ }
+ animate(0);
+ */
+
+</script>
+<canvas id="textRing" width="1080" height="1080"></canvas>
+
+<div class="instructions" id="site1">
+<img src="cedulas/Tilty 1.png">
+<div class="spanish">Y en México, ¿cómo estamos en salud?
+Para recorrer la República Mexicana, debes sujetar la mesa por los extremos y moverla hacia los lados.
+Prepárate para sobrevolar y encontrar información de salud en algunos estados de la República, de municipios de Sinaloa o de Ahome.</div>
+<div class="english">Find out more about health in Mexico
+To go across the country, you have to hold the edges of the table and move it sidewise.
+Get ready to fly over and discover information from other states of Mexico, Sinaloa and Ahome.
+</div>
+</div>
+<div class="overview" id="site2">
+<img src="cedulas/Tilty 2.png">
+<div class="spanish">
+En tan sólo 40 años, el perfil epidemiológico de México cambió, pues pasó de una situación en la que los principales problemas de salud pública eran la desnutrición y las enfermedades infectocontagiosas a un escenario dominado por la obesidad, la diabetes, las enfermedades cardiovasculares y otras enfermedades crónicas no transmisibles, relacionadas con la nutrición. Más aún, México posee uno de los registros más altos en casos de sobrepeso y obesidad, detectados a nivel mundial.
+</div>
+<div class="english">
+In only 40 years, Mexico’s epidemiological profile changed. The main problems used to be malnutrition and transmittable diseases. Nowadays obesity, diabetes, cardiovascular diseases and other chronic non transmittable diseases related to nutrition are our main health concerns.
+Mexico is one of the leading countries in obesity and weight problems worldwide.</div>
+</div>
+<div class="overview" id="site3">
+<img src="cedulas/Tilty 3.png">
+<div class="spanish">
+El estado de salud de cualquier población está íntimamente relacionado con el medio que la rodea. 
+</div>
+<div class="english">
+A community’s good state of health is directly related to its surroundings. </div>
+</div> 
+
+<div class="overview" id="site4">
+<img src="cedulas/Tilty 4.png">
+<div class="spanish">
+El agua que se toma, el aire que se respira, los lugares que se visitan, el salón en que se toman clases, el lugar donde se trabaja, el parque donde se hace ejercicio…, todos los lugares tienen gran implicación en el bienestar de las personas, por lo que la calidad y salubridad del entorno son esenciales para tener una buena salud.
+</div>
+<div class="english">
+The water that we drink, the air that we breath, the places we visit, the classroom we attend, our workplace, the park where we exercise… all of this places affect our well being. The quality of our surroundings are essential to our good health.
+</div>  
+</div>  
+
+<div class="state" id="site5">
+<img src="cedulas/Tilty 5.png">
+<div class="site_name">Sinaloa</div>
+<div class="spanish">
+El dengue es una infección por virus que se transmite por la picadura del mosquito hembra Aedes aegypti la cual está infectada. Se calcula que la mitad de la población mundial vive en áreas de riesgo de picadura. El dengue se presenta en los climas tropicales y subtropicales del planeta y Sinaloa es un estado endémico para el dengue debido a sus condiciones ambientales y por la presencia del mosquito transmisor.</div>
+<div class="english">
+Dengue is a viral disease transmitted by an infected female mosquito bite
+Dengue is a viral disease transmitted by the bite of an  infected female mosquito (Aedes aegypt). It is estimated that half of the world’s population lives in susceptible areas. Dengue is present in tropical and subtropical climates. Sinaloa is an endemic state given its climate conditions and the presence of this particular mosquito."   
+</div>
+</div>  
+
+
+<div class="state" id="site6">
+<img src="cedulas/Tilty 6.png">
+<div class="site_name">Ciudad de México</div>
+<div class="spanish">
+La exposición a la contaminación del aire, está relacionada con serios trastornos de salud, entre los que destacan: el incremento en las enfermedades respiratorias crónicas y agudas, la disminución de la capacidad respiratoria, el aumento en los ataques de asma, el incremento en la frecuencia de cáncer de pulmón, etcétera. Es así que, el mayor problema de salud pública en la Ciudad de México se debe a las enfermedades respiratorias agudas.
+</div>
+<div class="english">
+The exposure to air pollution is linked to serious health conditions. Such as chronic and acute respiratory diseases, reduction in respiratory capacity, increased number of asthma attacks and an increased lung cancer incidence.
+The most important public health problem in Mexico City is acute respiratory diseases.
+</div>
+</div>  
+
+<div class="state"  id="site7">
+<img src="cedulas/Tilty 7.png">
+<div class="site_name">Veracruz de Ignacio de la Llave</div>
+<div class="spanish">
+Las actividades humanas son responsables de la contaminación en
+diferentes ecosistemas, como el marino. Esta afectación causa daños a los recursos biológicos y, por consiguiente, a la salud humana.
+A nivel nacional, existe un programa para el monitoreo y control de los contaminantes en las playas denominado Playas Limpias. El resultado para Veracruz es positivo, pues los niveles de contaminación por enterococos en las muestras recolectadas son aceptables.
+</div>
+<div class="english">
+Human activities are responsible for polluting different ecosystems, like the ocean. They harm biological resources and therefore human health. There is a national program in charge of monitoring and controlling beach pollution, calles Clean Beaches “Playas limpias”.    
+The result in Veracruz has been favorable. Samples show acceptable levels of enterococcus.
+</div>  
+</div>  
+
+<div class="state"  id="site8">
+<img src="cedulas/Tilty 8.png">
+<div class="site_name">Chihuahua</div>
+<div class="spanish">
+El consumo de alimentos contaminados con bacterias, virus, parásitos o sustancias químicas nocivas causan enfermedades que van desde la diarrea hasta el cáncer.
+En Chihuahua, los sectores agrícola y ganadero se destacan por poseer estándares que permiten la producción de alimentos sanos y competitivos, a nivel nacional e internacional.
+</div>
+<div class="english">
+Eating foods contaminated with bacteria, parasites, viruses or harmful chemical substances, causes diseases as mild as diarrhea and as severe as cancer. In Chihuahua, agriculture and livestock have production standards that generate healthy and competitive food products nationally and internationally.
+</div>
+</div>  
+
+<div class="state"  id="site9">
+<img src="cedulas/Tilty 9.png">
+<div class="site_name">Guerrero</div>
+<div class="spanish">
+Se ha encontrado, a nivel mundial, que las tasas de mortalidad más altas se registran en las zonas más pobres y marginadas de un país.
+Guerrero ocupa uno de lugares más bajos en cuestión de desarrollo y pertenece a la región más pobre del país. Éste ocupa uno de los primeros lugares en enfermedades infecciosas intestinales, además de tener un número alto en casos de mortalidad materna, incidencia de dengue y chikungunya.
+</div>
+<div class="english">
+It is known that higher mortality rates are found in the poorest and alienated regions of a country. Guerrero is one of the state with the least development and in the poorest region of our country. It is one of the states with the most intestinal infectious diseases, most dengue and chikungunya cases and maternal mortality.
+</div>   
+</div>  
+
+<div class="overview"  id="site10">
+<img src="cedulas/Tilty 10.png">
+<div class="spanish">
+Las enfermedades crónico­degenerativas son enfermedades que tienen que ver con una presión sanguínea lenta. Sus principales factores de riesgo se asocian a una alimentación poco sana, a la inactividad física y al consumo de tabaco. Las enfermedades de este tipo frenan el crecimiento y potencial de desarrollo en los países que las padecen.    
+La principales enfermedades en Sinaloa son las crónico­degenerativas, se destacan las cerebrovasculares, la diabetes mellitus, las isquémicas del corazón y la obesidad. De éstas últimas, se sabe que tres de cada 10 niños y adolescentes tienen obesidad, mientras que en adultos, esta cifra aumenta a 7 de cada 10.
+</div>
+<div class="english">
+Chronic degenerative diseases are related to low blood pressure conditions. Some risk factors are an unhealthy diet, lack of exercise and use of tobacco. High incidences affect a country’s growth and development.
+Some of this type of diseases in Sinaloa are cerebrovascular diseases, diabetes mellitus, ischemic disease and obesity. 3 out of 10 children and teenagers have obesity and 7 out of 10 adults.
+</div>   
+</div>  
+
+<div class="county"  id="site11">
+<img src="cedulas/Tilty 11.png">
+<div class="site_name">Ahome</div>
+<div class="spanish">
+A los niños, desde edades tempranas, se les debe enseñar ciertas normas y hábitos de vida que garanticen su salud física y mental a futuro; el sistema escolar a esta edad es un escenario idóneo para que esto suceda. Ahome se encuentra entre los municipios que promueven la asistencia a la escuela en estas edades, sin embargo, aún existen diferencias significativas con respecto al escenario ideal.
+</div>
+<div class="english">
+Children have to be taught at a very young age habits and guidelines for a healthy physical and mental life. School is an ideal setting to learn this behaviors.
+Ahome promotes children to attend school at this ages. However there is still a long way to go to achieve the ideal goals.
+</div>
+</div>  
+
+<div class="county"  id="site12">
+<img src="cedulas/Tilty 12.png">
+<div class="site_name">Mazatlán</div>
+<div class="spanish">
+
+Cuando la población dispone de agua potable, a través de la red pública, se disminuye, en forma considerable, el riesgo de contraer enfermedades asociadas con la ingestión de agua no apta para consumo humano.
+Mazatlán es uno de los municipios de todo Sinaloa que tiene el mayor porcentaje de viviendas que disponen de agua entubada.
+</div>
+<div class="english">
+When people have access to drinking water, supplied by the state, the risk for contracting waterborne diseases is considerably reduced.
+Mazatlan is one of the cities in Sinaloa that possess the most homes with access to drinking water.
+</div>    
+</div>  
+
+<div class="county"  id="site13">
+<img src="cedulas/Tilty 13.png">
+<div class="site_name">Culiacán</div>
+<div class="spanish">
+Una meta a nivel mundial de los gobiernos es garantizar a sus ciudadanos la obtención de los servicios de salud sin que sufran por ello graves problemas económicos a la hora de pagarlos.
+Culiacán está desarrollando estrategias para incrementar el número de afiliados a algún servicio de salud.
+</div>
+<div class="english">
+ World wide goal for governments is to guarantee all citizens can access health services without acquiring considerable debt. Culiacan is developing strategies to increase affiliates that provide health services to the community.
+ </div>
+</div>  
+
+<div class="county"  id="site14">
+<img src="cedulas/Tilty 14.png">
+<div class="site_name">Badiguarato</div>
+<div class="spanish">
+
+La falta de servicios de energía en muchos países hace que la población local emplee leña, estiércol, carbón y otros combustibles tradicionales para cocinar. La contaminación del aire en estos espacios provoca la muerte de millones de personas al año.
+Badiguarato es el municipio con el porcentaje más alto de viviendas  en las que se usa leña o carbón para preparar alimentos.
+</div>
+<div class="english">
+The lack of electric energy supply in many countries forces people to use firewood, coal, manure and other fuels to cook. The air pollution that is created as a consequence kills millions of people each year. Badiguarato is the town with the most amount of household using firewood or coal to cook food.
+</div>    
+</div>  
+
+<div class="county"  id="site15">
+<img src="cedulas/Tilty 15.png">
+<div class="site_name">Salvador Alvarado (Guamúchil)</div>
+<div class="spanish">
+Las condiciones de la vivienda es uno de los principales determinantes de la salud de las personas. Las condiciones de la vivienda pueden promover o limitar la    
+"salud física, mental y social de sus residentes.
+Salvador Alvarado es uno de los municipios con mayor porcentaje de viviendas que disponen de agua entubada, drenaje y que cuentan con un piso diferente al de tierra.
+</div>
+<div class="english">
+The type and condition of homes is a decisive factor on people’s health. They can foster or limit physical, mental or the social health of its inhabitants. Salvador Alvarado is one of the town with the most amount of houses with drinking water, sewer and the use of floor instead of dirt inside the homes.
+</div>  
+</div>  
+
+<div class="overview"  id="site16">
+<img src="cedulas/Tilty 16.png">
+<div class="spanish">
+Las condiciones climáticas extremas tienen gran influencia en las enfermedades transmitidas a través del agua, los insectos, los caracoles y otros animales de sangre fría. En los lugares que presentan altas temperaturas se ha detectado que existe un incremento de enfermedades cardiovasculares y respiratorias, en donde los más vulnerables de sufrir enfermedades de este tipo son los niños, adolescentes y adultos mayores.
+</div>
+<div class="english">
+Extreme weather conditions play an important role in the transmission of diseases through water, insects, snails and other cold blooded animals. Places with high temperatures have more card.
+</div>
+</div>  
+
+
+<div class="city" id="site17">
+<img src="cedulas/Tilty 17.png">
+<div class="site_name">La Central (Los Mochis)</div>
+<div class="spanish">
+Los accidentes de tránsito son la causa de que decenas de millones de personas presenten heridas o tengan discapacidades. La promoción de prácticas como el uso de cinturón de seguridad, la disminución en los excesos de velocidad, el uso de casco, el paso de calles de manera segura son estrategias de prevención. En Los Mochis, los accidentes de tránsito son uno de los principales problemas de salud por lo que se crean e implementan estrategias de cultura vial.
+</div>
+<div class="english">
+Traffic accidents are the cause for harming tens of millions of people, some of which have ended up disabled. Some preventative measures are promoting seat belt use, lowering speed limits, using of helmets, and using crossroads. Traffic accidents are one of the main health problems in Los Mochis, therefore road culture strategies have been created and implemented.
+</div>
+</div>  
+
+  </body>
+</html>
+
+
+
+
+
+
+
