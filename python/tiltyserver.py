@@ -15,7 +15,7 @@ from Phidget22.PhidgetException import *
 from Phidget22.Devices.Encoder import *
 #from Phidget22.Devices.Spatial import *
 #from Phidgets.Events.Events import AccelerationChangeEventArgs
-from Phidgets.Devices.Accelerometer import *
+from Phidget22.Devices.Accelerometer import *
 from Phidget22.Phidget import *
 from GestureProcessor import TiltGestureProcessor, SpinGestureProcessor, TestHarnessGestureProcessor
 
@@ -285,10 +285,11 @@ try:
     #logging example, uncomment to generate a log file
     #spatial.enableLogging(PhidgetLogLevel.PHIDGET_LOG_VERBOSE, "phidgetlog.log")
 
-    spatial.setOnAttachHandler(SpatialAttached)
-    spatial.setOnDetachHandler(SpatialDetached)
-    spatial.setOnErrorHandler(SpatialError)
-    spatial.setOnSpatialDataHandler(SpatialData)
+   #spatial.setOnAttachHandler(SpatialAttached)
+   #spatial.setOnDetachHandler(SpatialDetached)
+   #spatial.setOnErrorHandler(SpatialError)
+   #spatial.setOnSpatialDataHandler(SpatialData)
+    pass
 except PhidgetException as e:
     print("Phidget Exception %i: %s" % (e.code, e.details))
     print("Exiting....")
