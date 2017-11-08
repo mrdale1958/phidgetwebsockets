@@ -109,7 +109,7 @@ class TiltData:
         for index in range(3):
             if self.components[index].size() == 0:
                 self.setAccelerometerZero(index,sensorData)
-            newX = sensorData - self.zeros[index]
+            newX = sensorData[index] - self.zeros[index]
             self.variances[index].enqueue(newX - self.components[index].head())
             self.components[index].enqueue(newX)
  
@@ -243,7 +243,7 @@ except PhidgetException as e:
 else:
     displayDeviceInfo()
 
-
+spatial = None
 
 #Event Handler Callback Functions
 def SpatialAttached(e):
@@ -330,7 +330,7 @@ try:
     
     accelerometer.setOnAttachHandler(AccelerometerAttached)
     accelerometer.setOnDetachHandler(AccelerometerDetached)
-    accelerometer.setOnErrorhandler(AccelerometerError)
+    accelerometer.setOnErrorHandler(AccelerometerError)
     accelerometer.setOnAccelerationChangeHandler(AccelerometerAccelerationChanged)
 except PhidgetException as e:
     print("Phidget accelerometer Exception %i: %s" % (e.code, e.details))
@@ -361,10 +361,10 @@ except PhidgetException as e:
 else:
     try:
         numAxis = accelerometer.getAxisCount()
-        accelerometer.setAccelChangeTrigger(0, 0.500)
-        accelerometer.setAccelChangeTrigger(1, 0.500)
-        if numAxis > 2:
-            accelerometer.setAccelChangeTrigger(2, 0.500)
+        accelerometer.setAccelerationChangeTrigger(0.500)
+       #accelerometer.setAccelerationChangeTrigger(1, 0.500)
+       #if numAxis > 2:
+       #    accelerometer.setAccelerationChangeTrigger(2, 0.500)
     except PhidgetException as e:
         print("Phidget accelerometer Exception %i: %s" % (e.code, e.details))
 
