@@ -11,14 +11,12 @@ from ctypes import *
 import sys
 #Phidget specific imports
 
-from Phidgets.PhidgetException import PhidgetErrorCodes, PhidgetException
-from Phidgets.Events.Events import AttachEventArgs, DetachEventArgs, ErrorEventArgs, EncoderPositionChangeEventArgs, InputChangeEventArgs
-from Phidgets.Devices.Encoder import Encoder
-from Phidgets.Events.Events import SpatialDataEventArgs
-from Phidgets.Devices.Spatial import Spatial, SpatialEventData, TimeSpan
+from Phidget22.PhidgetException import *
+from Phidget22.Devices.Encoder import *
+from Phidget22.Devices.Spatial import *
 #from Phidgets.Events.Events import AccelerationChangeEventArgs
 #from Phidgets.Devices.Accelerometer import Accelerometer
-from Phidgets.Phidget import PhidgetLogLevel
+from Phidget22.Phidget import *
 from GestureProcessor import TiltGestureProcessor, SpinGestureProcessor, TestHarnessGestureProcessor
 
 config = {
@@ -185,17 +183,17 @@ def displayDeviceInfo():
 
 #Event Handler Callback Functions
 def encoderAttached(e):
-    attached = e.device
-    print("Encoder %i Attached!" % (attached.getSerialNum()))
+    attached = e
+    print("Encoder %i Attached!" % (attached.getDeviceSerialNumber()))
 
 def encoderDetached(e):
-    detached = e.device
-    print("Encoder %i Detached!" % (detached.getSerialNum()))
+    detached = e
+    print("Encoder %i Detached!" % (detached.getDeviceSerialNumber()))
 
-def encoderError(e):
+def encoderError(e, eCode, description):
     try:
-        source = e.device
-        print("Encoder %i: Phidget Error %i: %s" % (source.getSerialNum(), e.eCode, e.description))
+        source = e
+        print("Encoder %i: Phidget Error %i: %s" % (source.getDeviceSerialNumber(), eCode, description))
     except PhidgetException as e:
         print("Phidget Exception %i: %s" % (e.code, e.details))
 
@@ -203,9 +201,9 @@ def encoderInputChange(e):
     source = e.device
     print("Encoder %i: Input %i: %s" % (source.getSerialNum(), e.index, e.state))
 
-def encoderPositionChange(e):
-    source = e.device
-    spindata.ingestSpinData(e.positionChange, e.time)
+def encoderPositionChange(e, positionChange, timeChange, indexTriggered):
+    source = e
+    spindata.ingestSpinData(positionChange, timeChange)
   
 try:
     #logging example, uncomment to generate a log file
@@ -213,8 +211,8 @@ try:
 
     spinner.setOnAttachHandler(encoderAttached)
     spinner.setOnDetachHandler(encoderDetached)
-    spinner.setOnErrorhandler(encoderError)
-    spinner.setOnInputChangeHandler(encoderInputChange)
+    spinner.setOnErrorHandler(encoderError)
+    # spinner.setOnInputChangeHandler(encoderInputChange)
     spinner.setOnPositionChangeHandler(encoderPositionChange)
 except PhidgetException as e:
     print("Phidget spinner Error %i: %s" % (e.code, e.details))
@@ -223,7 +221,7 @@ except PhidgetException as e:
 print("Opening spinner phidget object....")
 
 try:
-    spinner.openPhidget()
+    pass # spinner.openPhidget()
 except PhidgetException as e:
     print("Phidget spinner Error %i: %s" % (e.code, e.details))
     #exit(1)
@@ -231,11 +229,11 @@ except PhidgetException as e:
 print("Waiting for spinner attach....")
 
 try:
-    spinner.waitForAttach(10000)
+    spinner.openWaitForAttachment(10000)
 except PhidgetException as e:
     print("Phidget spinner Error %i: %s" % (e.code, e.details))
     try:
-        spinner.closePhidget()
+        spinner.close()
         spinner = None
     except PhidgetException as e:
         print("Phidget Error %i: %s" % (e.code, e.details))
@@ -249,24 +247,24 @@ else:
 #Event Handler Callback Functions
 def SpatialAttached(e):
     attached = e.device
-    print("Spatial %i Attached!" % (attached.getSerialNum()))
+    print("Spatial %i Attached!" % (attached.getDeviceSerialNumber()))
 
 def SpatialDetached(e):
     detached = e.device
-    print("Spatial %i Detached!" % (detached.getSerialNum()))
+    print("Spatial %i Detached!" % (detached.getDeviceSerialNumber()))
 
-def SpatialError(e):
+def SpatialError(e,  eCode, description):
     try:
-        source = e.device
-        print("Spatial %i: Phidget Error %i: %s" % (source.getSerialNum(), e.eCode, e.description))
+        source = e
+        print("Spatial %i: Phidget Error %i: %s" % (source.getDeviceSerialNumber(),  eCode, description))
     except PhidgetException as e:
         print("Phidget Exception %i: %s" % (e.code, e.details))
 
-def SpatialData(e):
-    source = e.device
-    if tiltdata.serialNumber == source.getSerialNum():
+def SpatialData(e, acceleration, angularRate, fieldStrength, timestamp):
+    source = e
+    if tiltdata.serialNumber == source.getDeviceSerialNumber():
         if tiltdata:
-            tiltdata.ingestSpatialData(e.spatialData[0])
+            tiltdata.ingestSpatialData(acceleration)
         # for index, spatialData in enumerate(e.spatialData):
         #     print("=== Data Set: %i ===" % (index))
         #     if len(spatialData.Acceleration) > 0:
@@ -288,17 +286,17 @@ try:
 
     spatial.setOnAttachHandler(SpatialAttached)
     spatial.setOnDetachHandler(SpatialDetached)
-    spatial.setOnErrorhandler(SpatialError)
+    spatial.setOnErrorHandler(SpatialError)
     spatial.setOnSpatialDataHandler(SpatialData)
 except PhidgetException as e:
     print("Phidget Exception %i: %s" % (e.code, e.details))
     print("Exiting....")
     spatial = None
 
-print("Opening phidget object....")
+print("Opening phidget spatial object....")
 
 try:
-    spatial.openPhidget()
+    pass # spatial.openPhidget()
 except PhidgetException as e:
     print("Phidget Exception %i: %s" % (e.code, e.details))
     print("Exiting....")
@@ -307,13 +305,13 @@ except PhidgetException as e:
 print("Waiting for attach....")
 
 try:
-    spatial.waitForAttach(10000)
-    tiltdata.serialNumber = spatial.getSerialNum()
+    spatial.openWaitForAttachment(10000)
+    tiltdata.serialNumber = spatial.getDeviceSerialNumber()
     print('Attached spatial: ', tiltdata.serialNumber)
 except PhidgetException as e:
     print("Phidget Exception %i: %s" % (e.code, e.details))
     try:
-        spatial.closePhidget()
+        spatial.close()
     except PhidgetException as e:
         print("Phidget Exception %i: %s" % (e.code, e.details))
         print("Exiting....")

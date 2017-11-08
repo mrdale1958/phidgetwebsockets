@@ -9,10 +9,10 @@ __date__ = 'May 17 2010'
 
 import threading
 from ctypes import *
-from Phidgets.PhidgetLibrary import PhidgetLibrary
-from Phidgets.Phidget import Phidget
-from Phidgets.PhidgetException import PhidgetErrorCodes, PhidgetException
-from Phidgets.Events.Events import EncoderPositionChangeEventArgs, InputChangeEventArgs
+from Phidgets22.PhidgetLibrary import PhidgetLibrary
+from Phidgets22.Phidget import Phidget
+from Phidgets22.PhidgetException import PhidgetErrorCodes, PhidgetException
+from Phidgets22.Events.Events import EncoderPositionChangeEventArgs, InputChangeEventArgs
 import sys
 
 class Encoder(Phidget):

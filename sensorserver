@@ -1,5 +1,6 @@
 #!/bin/bash
-cd /var/www/html/LosMochisTilty
+cd python
+# cd /var/www/html/LosMochisTilty
 
 while true
 do
