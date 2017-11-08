@@ -13,9 +13,9 @@ import sys
 
 from Phidget22.PhidgetException import *
 from Phidget22.Devices.Encoder import *
-from Phidget22.Devices.Spatial import *
+#from Phidget22.Devices.Spatial import *
 #from Phidgets.Events.Events import AccelerationChangeEventArgs
-#from Phidgets.Devices.Accelerometer import Accelerometer
+from Phidgets.Devices.Accelerometer import *
 from Phidget22.Phidget import *
 from GestureProcessor import TiltGestureProcessor, SpinGestureProcessor, TestHarnessGestureProcessor
 
@@ -105,12 +105,13 @@ class TiltData:
         self.components[1].enqueue(newY)
         self.components[2].enqueue(newZ) 
      
-    def ingestAccelerometerData(self, index, sensorData):
-        if self.components[index].size() == 0:
-            self.setAccelerometerZero(index,sensorData)
-        newX = sensorData - self.zeros[index]
-        self.variances[index].enqueue(newX - self.components[index].head())
-        self.components[index].enqueue(newX)
+    def ingestAccelerometerData(self, sensorData):
+        for index in range(3):
+            if self.components[index].size() == 0:
+                self.setAccelerometerZero(index,sensorData)
+            newX = sensorData - self.zeros[index]
+            self.variances[index].enqueue(newX - self.components[index].head())
+            self.components[index].enqueue(newX)
  
 
                       
@@ -156,8 +157,8 @@ except RuntimeError as e:
 
 #Create an accelerometer object
 try:
-    spatial = Spatial()
-#    accelerometer = Accelerometer()
+#    spatial = Spatial()
+    accelerometer = Accelerometer()
     tiltdata = TiltData()
 
 except RuntimeError as e:
@@ -293,105 +294,83 @@ except PhidgetException as e:
     print("Exiting....")
     spatial = None
 
-print("Opening phidget spatial object....")
+# #else:
+    #spatial.setDataRate(4)
+    #displayDeviceInfo()
+def AccelerometerAttached(e):
+    attached = e
+    print("Accelerometer %i Attached!" % (attached.getDeviceSerialNumber()))
 
-try:
-    pass # spatial.openPhidget()
-except PhidgetException as e:
-    print("Phidget Exception %i: %s" % (e.code, e.details))
-    print("Exiting....")
-    spatial = None
+def AccelerometerDetached(e):
+    detached = e
+    print("Accelerometer %i Detached!" % (detached.getDeviceSerialNumber()))
 
-print("Waiting for attach....")
-
-try:
-    spatial.openWaitForAttachment(10000)
-    tiltdata.serialNumber = spatial.getDeviceSerialNumber()
-    print('Attached spatial: ', tiltdata.serialNumber)
-except PhidgetException as e:
-    print("Phidget Exception %i: %s" % (e.code, e.details))
+def AccelerometerError(e, eCode, description):
+    print("Error %i : %s" % (eCode, description))
     try:
-        spatial.close()
+        source = e.device
+        print("Accelerometer %i: Phidget Error %i: %s" % (source.getDeviceSerialNumber(), eCode, description))
     except PhidgetException as e:
         print("Phidget Exception %i: %s" % (e.code, e.details))
-        print("Exiting....")
-        spatial = None
-    print("Exiting....")
-    spatial = None
-else:
-    spatial.setDataRate(4)
-    #displayDeviceInfo()
-# def AccelerometerAttached(e):
-#     attached = e.device
-#     print("Accelerometer %i Attached!" % (attached.getSerialNum()))
 
-# def AccelerometerDetached(e):
-#     detached = e.device
-#     print("Accelerometer %i Detached!" % (detached.getSerialNum()))
+def AccelerometerAccelerationChanged(e, acceleration, timestamp):
+    print("Acceleration: %f  %f  %f" % (acceleration[0], acceleration[1], acceleration[2]))
+    print("Timestamp: %f\n" % timestamp)
+    source = e
+    if tiltdata.serialNumber == source.getDeviceSerialNumber():
+        if tiltdata:
+            tiltdata.ingestAccelerometerData(acceleration)
+    print("Accelerometer %i: Axis %i: %6f" % (source.getDeviceSerialNumber(), e.index, e.acceleration))
 
-# def AccelerometerError(e):
-#     try:
-#         source = e.device
-#         print("Accelerometer %i: Phidget Error %i: %s" % (source.getSerialNum(), e.eCode, e.description))
-#     except PhidgetException as e:
-#         print("Phidget Exception %i: %s" % (e.code, e.details))
-
-# def AccelerometerAccelerationChanged(e):
-#     source = e.device
-#     if tiltdata.serialNumber == source.getSerialNum():
-#         if tiltdata:
-#             tiltdata.ingestAccelerometerData(e.index, e.acceleration)
-#     print("Accelerometer %i: Axis %i: %6f" % (source.getSerialNum(), e.index, e.acceleration))
-
-# #Main Program Code
-# try:
-#     #logging example, uncomment to generate a log file
-#     #accelerometer.enableLogging(PhidgetLogLevel.PHIDGET_LOG_VERBOSE, "phidgetlog.log")
+#Main Program Code
+try:
+    #logging example, uncomment to generate a log file
+    #accelerometer.enableLogging(PhidgetLogLevel.PHIDGET_LOG_VERBOSE, "phidgetlog.log")
     
-#     accelerometer.setOnAttachHandler(AccelerometerAttached)
-#     accelerometer.setOnDetachHandler(AccelerometerDetached)
-#     accelerometer.setOnErrorhandler(AccelerometerError)
-#     accelerometer.setOnAccelerationChangeHandler(AccelerometerAccelerationChanged)
-# except PhidgetException as e:
-#     print("Phidget accelerometer Exception %i: %s" % (e.code, e.details))
-#     accelerometer = None
+    accelerometer.setOnAttachHandler(AccelerometerAttached)
+    accelerometer.setOnDetachHandler(AccelerometerDetached)
+    accelerometer.setOnErrorhandler(AccelerometerError)
+    accelerometer.setOnAccelerationChangeHandler(AccelerometerAccelerationChanged)
+except PhidgetException as e:
+    print("Phidget accelerometer Exception %i: %s" % (e.code, e.details))
+    accelerometer = None
 
-# print("Opening accelerometer object....")
+print("Opening accelerometer object....")
 
-# try:
-#     accelerometer.openPhidget()
-# except PhidgetException as e:
-#     print("Phidget accelerometer Exception %i: %s" % (e.code, e.details))
-#     accelerometer = None
+try:
+    pass #accelerometer.openPhidget()
+except PhidgetException as e:
+    print("Phidget accelerometer Exception %i: %s" % (e.code, e.details))
+    accelerometer = None
 
-# print("Waiting for accelerometer attach....")
+print("Waiting for accelerometer attach....")
 
-# try:
-#     accelerometer.waitForAttach(10000)
-#     tiltdata.serialNumber = accelerometer.getSerialNum()
-#     print('Attached accelerometer: ', tiltdata.serialNumber)
-# except PhidgetException as e:
-#     print("Phidget accelerometer Exception %i: %s" % (e.code, e.details))
-#     try:
-#         accelerometer.closePhidget()
-#     except PhidgetException as e:
-#         print("Phidget accelerometer Exception %i: %s" % (e.code, e.details))
-#         accelerometer = None
-#     accelerometer = None
-# else:
-#     try:
-#         numAxis = accelerometer.getAxisCount()
-#         accelerometer.setAccelChangeTrigger(0, 0.500)
-#         accelerometer.setAccelChangeTrigger(1, 0.500)
-#         if numAxis > 2:
-#             accelerometer.setAccelChangeTrigger(2, 0.500)
-#     except PhidgetException as e:
-#         print("Phidget accelerometer Exception %i: %s" % (e.code, e.details))
+try:
+    accelerometer.openWaitForAttachment(10000)
+    tiltdata.serialNumber = accelerometer.getDeviceSerialNumber()
+    print('Attached accelerometer: ', tiltdata.serialNumber)
+except PhidgetException as e:
+    print("Phidget accelerometer Exception %i: %s" % (e.code, e.details))
+    try:
+        accelerometer.close()
+    except PhidgetException as e:
+        print("Phidget accelerometer Exception %i: %s" % (e.code, e.details))
+        accelerometer = None
+    accelerometer = None
+else:
+    try:
+        numAxis = accelerometer.getAxisCount()
+        accelerometer.setAccelChangeTrigger(0, 0.500)
+        accelerometer.setAccelChangeTrigger(1, 0.500)
+        if numAxis > 2:
+            accelerometer.setAccelChangeTrigger(2, 0.500)
+    except PhidgetException as e:
+        print("Phidget accelerometer Exception %i: %s" % (e.code, e.details))
 
 if spatial:
     tilter = spatial
-# else:
-#     tilter = accelerometer 
+else:
+    tilter = accelerometer 
 #     accelerometer.setAccelChangeTrigger(0, 0.0100)
 #     accelerometer.setAccelChangeTrigger(1, 0.0100)
 #     print(accelerometer.getAccelChangeTrigger(0))
