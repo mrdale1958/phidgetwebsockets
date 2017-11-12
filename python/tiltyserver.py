@@ -82,7 +82,7 @@ class TiltData:
         self.components = [ Queue(config['accelerometerQueueLength']), Queue(config['accelerometerQueueLength']), Queue(config['accelerometerQueueLength']) ]
         self.variances =  [ Queue(config['accelerometerQueueLength']), Queue(config['accelerometerQueueLength']), Queue(config['accelerometerQueueLength']) ]
         self.magnitude = 0.0
-        self.zeros = [ 0.0f, 0.0f, 0.0f ]
+        self.zeros = [ 0.0, 0.0, 0.0 ]
 
         self.serialNumber = ''
 
@@ -108,7 +108,7 @@ class TiltData:
     def ingestAccelerometerData(self, sensorData):
         for index in range(3):
             if self.components[index].size() == 0:
-                self.setAccelerometerZero(index,sensorData)
+                self.setAccelerometerZero(index,sensorData[index])
             newX = sensorData[index] - self.zeros[index]
             self.variances[index].enqueue(newX - self.components[index].head())
             self.components[index].enqueue(newX)
@@ -321,7 +321,8 @@ def AccelerometerAccelerationChanged(e, acceleration, timestamp):
     if tiltdata.serialNumber == source.getDeviceSerialNumber():
         if tiltdata:
             tiltdata.ingestAccelerometerData(acceleration)
-    print("Accelerometer %i: Axis %i: %6f" % (source.getDeviceSerialNumber(), e.index, e.acceleration))
+
+#   print("Accelerometer %i: Axis %i: %6f" % (source.getDeviceSerialNumber(), e.index, e.acceleration))
 
 #Main Program Code
 try:
