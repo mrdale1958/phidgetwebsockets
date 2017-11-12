@@ -82,7 +82,7 @@ class TiltData:
         self.components = [ Queue(config['accelerometerQueueLength']), Queue(config['accelerometerQueueLength']), Queue(config['accelerometerQueueLength']) ]
         self.variances =  [ Queue(config['accelerometerQueueLength']), Queue(config['accelerometerQueueLength']), Queue(config['accelerometerQueueLength']) ]
         self.magnitude = 0.0
-        self.zeros = [ 0.0, 0.0, 0.0 ]
+        self.zeros = [ 0.0f, 0.0f, 0.0f ]
 
         self.serialNumber = ''
 
