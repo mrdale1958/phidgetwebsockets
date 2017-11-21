@@ -1,11 +1,11 @@
 #!/bin/bash
 cd ~pi/phidgetwebsockets/python
-# cd /var/www/html/LosMochisTilty
+
 
 while true
 do
 
-	python3 tiltyserver.py 2>> tiltyserver_errors 1>> tiltyserver_output
+	./tiltyserver.py --loglevel warning --flipX 1 --flipY -1 --flipZ -1
 	sleep 30
 done
 cd /

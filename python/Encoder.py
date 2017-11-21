@@ -1,18 +1,18 @@
-"""Copyright 2012 Phidgets Inc.
+"""Copyright 2017 dale MacDonald
 This work is licensed under the Creative Commons Attribution 2.5 Canada License. 
 To view a copy of this license, visit http://creativecommons.org/licenses/by/2.5/ca/
 """
 
-__author__ = 'Adam Stelmack'
-__version__ = '2.1.8'
-__date__ = 'May 17 2010'
+__author__ = 'Dale MacDonald'
+__version__ = '2.0'
+__date__ = 'Novemeber 20, 2017'
 
 import threading
 from ctypes import *
-from Phidgets22.PhidgetLibrary import PhidgetLibrary
-from Phidgets22.Phidget import Phidget
-from Phidgets22.PhidgetException import PhidgetErrorCodes, PhidgetException
-from Phidgets22.Events.Events import EncoderPositionChangeEventArgs, InputChangeEventArgs
+#from Phidget22.PhidgetLibrary import PhidgetLibrary
+from Phidget22.Phidget import *
+from Phidget22.PhidgetException import *
+from Phidget22.Events.Events import *
 import sys
 
 class Encoder(Phidget):
