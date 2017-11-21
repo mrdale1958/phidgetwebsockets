@@ -1,0 +1,5 @@
+Namespace(accelerometerQueueLength=10, encoderQueueLength=1, flipX=1, flipY=-1, flipZ=-1, local_port_num=5678, localhost=False, logfilename='/var/log/tilty/server.log', loglevel=['warning'], tiltSampleRate=0.1, tiltThreshold=0.002)
+Traceback (most recent call last):
+  File "./tiltyserver.py", line 90, in <module>
+    s.connect(('8.8.8.8', 1))  # connect() for UDP doesn't send packets
+OSError: [Errno 101] Network is unreachable
