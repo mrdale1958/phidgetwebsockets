@@ -14,7 +14,8 @@ class GestureProcessor:
     def nextAction(self):
         retval = self.action
         self.action = None
-        print(repr(retval))
+        #if retval:
+        #    print(repr(retval))
         return json.dumps(retval) 
      
 class SpinGestureProcessor(GestureProcessor):
