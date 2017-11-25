@@ -78,7 +78,7 @@ class SpinData:
 
     def encoderDetached(e):
         detached = e
-        d = {'clientip': "spinner", 'user':"encoderAttached" ()}
+        d = {'clientip': "spinner", 'user':"encoderDetached" }
         SpinData._logger.warning('Encoder Detached: %s', detached.getDeviceSerialNumber(), extra=d)
 
     def encoderError(e, eCode, description):
