@@ -56,25 +56,33 @@ class SpinData:
     #Information Display Function
     def displayDeviceInfo():
         pass
-        # print("|------------|----------------------------------|--------------|------------|")
-        # print("|- Attached -|-              Type              -|- Serial No. -|-  Version -|")
-        # print("|------------|----------------------------------|--------------|------------|")
-        # if _spinner:
-        #   print("|- %8s -|- %30s -|- %10d -|- %8d -|" % (_spinner.isAttached(), _spinner.getDeviceName(), _spinner.getSerialNum(), _spinner.getDeviceVersion()))
-        #   print("|------------|----------------------------------|--------------|------------|")
-        # if tilter:
-        #   print("|- %8s -|- %30s -|- %10d -|- %8d -|" % (tilter.isAttached(), tilter.getDeviceName(), tilter.getSerialNum(), tilter.getDeviceVersion()))
-        #   print("|------------|----------------------------------|--------------|------------|")
-        #   print("Number of Acceleration Axes: %i" % (tilter.getAccelerationAxisCount()))
-        #   print("Number of Gyro Axes: %i" % (tilter.getGyroAxisCount()))
-        #   print("Number of Compass Axes: %i" % (tilter.getCompassAxisCount()))
 
     #Event Handler Callback Functions
     def encoderAttached(e):
         attached = e
+        try:
+            print("\nAttach Event Detected (Information Below)")
+            print("===========================================")
+            print("Library Version: %s" % attached.getLibraryVersion())
+            print("Serial Number: %d" % attached.getDeviceSerialNumber())
+            print("Channel: %d" % attached.getChannel())
+            print("Channel Class: %s" % attached.getChannelClass())
+            print("Channel Name: %s" % attached.getChannelName())
+            print("Device ID: %d" % attached.getDeviceID())
+            print("Device Version: %d" % attached.getDeviceVersion())
+            print("Device Name: %s" % attached.getDeviceName())
+            print("Device Class: %d" % attached.getDeviceClass())
+            print("\n")
+
+        except PhidgetException as e:
+            print("Phidget Exception %i: %s" % (e.code, e.details))
+            print("Press Enter to Exit...\n")
+            readin = sys.stdin.read(1)
 
         d = {'clientip': "spinner", 'user':"encoderAttached"}
         SpinData._logger.info('Encoder Attached! %s', 'good news', extra=d)
+        d = { 'clientip': "spinner", 'user': "getMinPositionChangeTrigger %d getPositionChangeTrigger %d" %(SpinData._spinner.getMinPositionChangeTrigger(), SpinData._spinner.getPositionChangeTrigger())}
+        SpinData._logger.critical('Encoder setup: %s', "hmmm", extra=d)
 
     def encoderDetached(e):
         detached = e
