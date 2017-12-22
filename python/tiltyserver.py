@@ -94,7 +94,7 @@ else:
     s.connect(('8.8.8.8', 1))  # connect() for UDP doesn't send packets
     local_ip_address = s.getsockname()[0]
 d = {'clientip': local_ip_address, 'user': 'pi'}
-logger.info('Server starting: %s', 'defaults loaded %s' %args, extra=d)
+logger.warning('Server starting: %s', 'defaults loaded %s %s' %(local_ip_address,args), extra=d)
 
 config = {
     'accelerometerQueueLength': args.accelerometerQueueLength,

@@ -7,6 +7,7 @@ class GestureProcessor:
         self.sensor = sensor
         self.config = config
         self.action = None
+        self.requestCount = 0
         
     def run(self):
         return False 
@@ -42,7 +43,9 @@ class SpinGestureProcessor(GestureProcessor):
             self.action = { 'gesture': 'zoom',
                     'vector': {
                         'delta': self.delta
-                    }}
+                    },
+                    'id': self.requestCount }
+            self.requestCount += 1
             return True
         return False
 
