@@ -1,0 +1,5 @@
+cronlog
+wednesdayErrors.txt
+*.pyc
+python/__pycache__/*.pyc
+*.swp

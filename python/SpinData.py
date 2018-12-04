@@ -22,6 +22,7 @@ class SpinData:
         self.gestureProcessor = SpinGestureProcessor(self, config)
         self.position = position
         self.delta = positionChange
+        self.deltas = [0,0,0,0]
         self.timestamp = datetime.time()
         self.elapsedTime = elapsedtime
         self.spinHistory = Queue(config['encoderQueueLength'])
@@ -48,10 +49,14 @@ class SpinData:
             SpinData._spinner = None
 
 
-    def ingestSpinData(self, positionChange, time):
+    def ingestSpinData(self, channel, positionChange, time):
         self.delta = positionChange
+        self.deltas[channel] = positionChange
+        sensordiff = 0
+        for ch in range(4):
+            sensordiff = sensordiff - self.deltas[ch]
         self.elapsedTime = time
-        self.spinHistory.enqueue( positionChange * self.config['flipZ'])
+        self.spinHistory.enqueue( sensordiff * self.config['flipZ'])
 
     #Information Display Function
     def displayDeviceInfo():
@@ -91,14 +96,17 @@ class SpinData:
 
     def encoderError(e, eCode, description):
         source = e
-        d = {'clientip': "spinner", 'user':"encoderError"}
-        SpinData._logger.error('Encoder error %s', description, extra=d)
+#       d = {'clientip': "spinner", 'user':"encoderError"}
+#       SpinData._logger.error('Encoder error %s', description, extra=d)
  
     def encoderInputChange(e):
-        source = e.device
+        source = e.getDeviceID()
         
 
     def encoderPositionChange(e, positionChange, timeChange, indexTriggered):
         source = e
+        channel = e.getChannel()
+        d = {'clientip': "spinner", 'user':"encoderPositionChanged" }
+        SpinData._logger.warning('Encoder update: %s', "%d %d" %(channel, positionChange), extra=d)
         for spinner in SpinData._all:
-            spinner.ingestSpinData(positionChange, timeChange)
+            spinner.ingestSpinData(channel, positionChange, timeChange)
