@@ -27,7 +27,10 @@ class TwistData:
         self.timestamp = datetime.time()
         self.elapsedTime = elapsedtime
         self.twistHistory = Queue(config['encoderQueueLength'])
-        _channels = config.channels ? config.channels : [0,1]
+        if 'channels' in config:
+            _channels = config.channels
+        else:
+            _channels =  [0,2]
         
         if (TwistData._logger == None):
             TwistData._logger = logging.getLogger('twistsensorserver')

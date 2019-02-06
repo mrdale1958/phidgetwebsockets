@@ -24,7 +24,7 @@ from Phidget22.Devices.Accelerometer import *
 from Phidget22.Phidget import *
 from GestureProcessor import TiltGestureProcessor, SpinGestureProcessor, TestHarnessGestureProcessor
 from Queue import Queue
-from SpinData import SpinData
+from TwistData import TwistData
 from TiltData import TiltData
 
 parser = argparse.ArgumentParser(prog='tiltyserver', description='Serve Phidget sensor data via websocket.')
@@ -108,7 +108,7 @@ config = {
 
 #Create an encoder object
 try:
-    spindata = SpinData(config=config)
+    spindata = TwistData(config=config)
 except RuntimeError as e:
 
     d = {'clientip': local_ip_address, 'user': 'pi'}
