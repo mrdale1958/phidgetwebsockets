@@ -119,4 +119,14 @@ class TwistData:
         channel = e.getChannel()
         d = {'clientip': "twister", 'user':"encoderPositionChanged" }
         TwistData._logger.warning('Encoder update: %s', "%d %d" %(channel, positionChange), extra=d)
-        this.ingestTwistData(channel, positionChange, timeChange)
+#        ingestTwistData(channel, positionChange, timeChange)
+        self.delta = 0
+        for sensorNum in range(2):
+            self.delta += TwistData._twister[sensorNum]
+        ##self.deltas[channel] = positionChange
+        ##sensordiff = 0
+        ##for ch in range(4):
+        ##    sensordiff = sensordiff - self.deltas[ch]
+        self.elapsedTime = time
+        self.twistHistory.enqueue( self.delta * self.config['flipZ'])
+
