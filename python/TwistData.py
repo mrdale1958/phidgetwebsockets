@@ -49,13 +49,13 @@ class TwistData:
             TwistData._logger.critical('_twister init failed: %s', 'details%s'% e.details, extra=d)
             TwistData._twister = None
             for sensorNum in range(2):
-            try:
-                TwistData._twister[sensorNum].openWaitForAttachment(TwistData._waitTimeForConnect)
-                TwistData._twister[sensorNum].setDataInterval(TwistData._twister[sensorNum].getMinDataInterval());
-            except PhidgetException as e:
-                d = {'clientip': "twister", 'user':"open"}
-                TwistData._logger.critical('_twister connect failed: %s', 'details channel: %d error: %s'% (sensorNum, e.details), extra=d)
-                TwistData._twister = None
+                try:
+                    TwistData._twister[sensorNum].openWaitForAttachment(TwistData._waitTimeForConnect)
+                    TwistData._twister[sensorNum].setDataInterval(TwistData._twister[sensorNum].getMinDataInterval());
+                except PhidgetException as e:
+                    d = {'clientip': "twister", 'user':"open"}
+                    TwistData._logger.critical('_twister connect failed: %s', 'details channel: %d error: %s'% (sensorNum, e.details), extra=d)
+                    TwistData._twister = None
 
 
     def ingestTwistData(self, channel, positionChange, time):
