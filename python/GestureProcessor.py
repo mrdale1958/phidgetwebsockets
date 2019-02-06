@@ -49,6 +49,36 @@ class SpinGestureProcessor(GestureProcessor):
             return True
         return False
 
+class TwistGestureProcessor(GestureProcessor):
+    def __init__(self,sensor,config):
+        GestureProcessor.__init__(self,sensor,config)
+        self.position = 0.0
+        self.rate = 0.0
+        self.delta = 0
+
+    def getTwist(self):
+        retval = False
+        if self.sensor.twistHistory.size():
+            #print(repr(self.sensor.spinHistory.items))
+            newDelta = sum(self.sensor.twistHistory.items) / self.sensor.twistHistory.size()
+            self.sensor.twistHistory.enqueue(0)
+
+            self.delta = newDelta
+            if newDelta:
+                retval = True
+        return retval
+
+    def run(self):
+        if self.sensor and self.getTwist():
+            self.action = { 'gesture': 'zoom',
+                    'vector': {
+                        'delta': self.delta
+                    },
+                    'id': self.requestCount }
+            self.requestCount += 1
+            return True
+        return False
+
 
 class TiltGestureProcessor(GestureProcessor):
     def __init__(self,sensor,config):
