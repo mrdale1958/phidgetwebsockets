@@ -42,8 +42,8 @@ class TwistData:
                 TwistData._twister[sensorNum].setOnErrorHandler(TwistData.encoderError)
                 # _twister.setOnInputChangeHandler(encoderInputChange)
                 TwistData._twister[sensorNum].setOnPositionChangeHandler(TwistData.encoderPositionChange)
-            TwistData._twister[0] = _channels[0]
-            TwistData._twister[1] = _channels[1]
+            TwistData._twister[0].setChannel(_channels[0])
+            TwistData._twister[1].setChannel(_channels[1])
         except PhidgetException as e:
             d = {'clientip': "twister", 'user':"__init__"}
             TwistData._logger.critical('_twister init failed: %s', 'details%s'% e.details, extra=d)
