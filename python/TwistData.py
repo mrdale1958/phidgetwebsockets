@@ -117,12 +117,13 @@ class TwistData:
     def encoderPositionChange(e, positionChange, timeChange, indexTriggered):
         source = e
         channel = e.getChannel()
-        d = {'clientip': "twister", 'user':"encoderPositionChanged" }
-        TwistData._logger.warning('Encoder update: %s', "%d %d" %(channel, positionChange), extra=d)
 #        ingestTwistData(channel, positionChange, timeChange)
         self.delta = 0
         for sensorNum in range(2):
             self.delta += TwistData._twister[sensorNum].getPosition()
+        d = {'clientip': "twister", 'user':"encoderPositionChanged" }
+        if self.delta:
+            TwistData._logger.warning('Encoder update: %s', "ch: %d delta: %d NewPos: %d" %(channel, self.delta, TwistData._twister[sensorNum].getPosition()), extra=d)
         ##self.deltas[channel] = positionChange
         ##sensordiff = 0
         ##for ch in range(4):
