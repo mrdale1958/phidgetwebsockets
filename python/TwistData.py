@@ -62,11 +62,13 @@ class TwistData:
     def ingestTwistData(self, channel, positionChange, time):
         self.delta = 0
         for sensorNum in range(2):
-            self.delta += TwistData._twister[sensorNum]
+            self.delta += TwistData._twister[sensorNum].getPosition()
         ##self.deltas[channel] = positionChange
         ##sensordiff = 0
         ##for ch in range(4):
         ##    sensordiff = sensordiff - self.deltas[ch]
+        if self.delta:
+            TwistData._logger.warning('Encoder update: %s', "ch: %d delta: %d NewPos: %d" %(channel, self.delta, TwistData._twister[sensorNum].getPosition()), extra=d)
         self.elapsedTime = time
         self.twistHistory.enqueue( self.delta * self.config['flipZ'])
 
@@ -117,17 +119,5 @@ class TwistData:
     def encoderPositionChange(e, positionChange, timeChange, indexTriggered):
         source = e
         channel = e.getChannel()
-#        ingestTwistData(channel, positionChange, timeChange)
-        self.delta = 0
-        for sensorNum in range(2):
-            self.delta += TwistData._twister[sensorNum].getPosition()
-        d = {'clientip': "twister", 'user':"encoderPositionChanged" }
-        if self.delta:
-            TwistData._logger.warning('Encoder update: %s', "ch: %d delta: %d NewPos: %d" %(channel, self.delta, TwistData._twister[sensorNum].getPosition()), extra=d)
-        ##self.deltas[channel] = positionChange
-        ##sensordiff = 0
-        ##for ch in range(4):
-        ##    sensordiff = sensordiff - self.deltas[ch]
-        self.elapsedTime = time
-        self.twistHistory.enqueue( self.delta * self.config['flipZ'])
+        TwistData.ingestTwistData(channel, positionChange, timeChange)
 
