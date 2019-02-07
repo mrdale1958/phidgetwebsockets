@@ -122,7 +122,7 @@ class TwistData:
 #        ingestTwistData(channel, positionChange, timeChange)
         self.delta = 0
         for sensorNum in range(2):
-            self.delta += TwistData._twister[sensorNum]
+            self.delta += TwistData._twister[sensorNum].getPosition()
         ##self.deltas[channel] = positionChange
         ##sensordiff = 0
         ##for ch in range(4):
