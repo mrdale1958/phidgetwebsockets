@@ -51,7 +51,8 @@ class TwistData:
             for sensorNum in range(2):
                 try:
                     TwistData._twister[sensorNum].openWaitForAttachment(TwistData._waitTimeForConnect)
-                    TwistData._twister[sensorNum].setDataInterval(TwistData._twister[sensorNum].getMinDataInterval());
+                    TwistData._twister[sensorNum].setDataInterval(TwistData._twister[sensorNum].getMinDataInterval())
+                    TwistData._logger.info('_twister connecting: %s', 'details channel: %d '% (sensorNum), extra={})
                 except PhidgetException as e:
                     d = {'clientip': "twister", 'user':"open"}
                     TwistData._logger.critical('_twister connect failed: %s', 'details channel: %d error: %s'% (sensorNum, e.details), extra=d)
@@ -77,23 +78,22 @@ class TwistData:
     def encoderAttached(e):
         attached = e
         try:
-            print("\nAttach Event Detected (Information Below)")
-            print("===========================================")
-            print("Library Version: %s" % attached.getLibraryVersion())
-            print("Serial Number: %d" % attached.getDeviceSerialNumber())
-            print("Channel: %d" % attached.getChannel())
-            print("Channel Class: %s" % attached.getChannelClass())
-            print("Channel Name: %s" % attached.getChannelName())
-            print("Device ID: %d" % attached.getDeviceID())
-            print("Device Version: %d" % attached.getDeviceVersion())
-            print("Device Name: %s" % attached.getDeviceName())
-            print("Device Class: %d" % attached.getDeviceClass())
-            print("\n")
+            TwistData._logger.info("\nAttach Event Detected (Information Below)", extra={})
+            TwistData._logger.info("===========================================")
+            TwistData._logger.info("Library Version: %s" % attached.getLibraryVersion(), extra={})
+            TwistData._logger.info("Serial Number: %d" % attached.getDeviceSerialNumber(), extra={})
+            TwistData._logger.info("Channel: %d" % attached.getChannel(), extra={})
+            TwistData._logger.info("Channel Class: %s" % attached.getChannelClass(), extra={})
+            TwistData._logger.info("Channel Name: %s" % attached.getChannelName(), extra={})
+            TwistData._logger.info("Device ID: %d" % attached.getDeviceID(), extra={})
+            TwistData._logger.info("Device Version: %d" % attached.getDeviceVersion(), extra={})
+            TwistData._logger.info("Device Name: %s" % attached.getDeviceName(), extra={})
+            TwistData._logger.info("Device Class: %d" % attached.getDeviceClass(), extra={})
 
         except PhidgetException as e:
-            print("Phidget Exception %i: %s" % (e.code, e.details))
-            print("Press Enter to Exit...\n")
-            readin = sys.stdin.read(1)
+            TwistData._logger.info("Phidget Exception %i: %s" % (e.code, e.details), extra={})
+            #TwistData._logger.info("Press Enter to Exit...\n")
+            #readin = sys.stdin.read(1)
 
         d = {'clientip': "twister", 'user':"encoderAttached"}
         TwistData._logger.info('Encoder Attached! %s', 'good news', extra=d)
