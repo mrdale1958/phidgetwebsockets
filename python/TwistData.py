@@ -23,6 +23,7 @@ class TwistData:
         self.gestureProcessor = TwistGestureProcessor(self, config)
         self.position = position
         self.delta = positionChange
+        self.serialNumber = -1
         self.deltas = [0,0,0,0]
         self.timestamp = datetime.time()
         self.elapsedTime = elapsedtime
@@ -91,6 +92,9 @@ class TwistData:
             TwistData._logger.info("Device Version: %d" % attached.getDeviceVersion(), extra={})
             TwistData._logger.info("Device Name: %s" % attached.getDeviceName(), extra={})
             TwistData._logger.info("Device Class: %d" % attached.getDeviceClass(), extra={})
+            for twister in TwistData._all:
+                if twister.serialNumber < 0:
+                    twister.serialNumber = attached.getDeviceSerialNumber()
 
         except PhidgetException as e:
             TwistData._logger.info("Phidget Exception %i: %s" % (e.code, e.details), extra={})
@@ -119,5 +123,10 @@ class TwistData:
     def encoderPositionChange(e, positionChange, timeChange, indexTriggered):
         source = e
         channel = e.getChannel()
-        TwistData.ingestTwistData(channel, positionChange, timeChange)
+        for twister in TwistData._all:
+            #print(tilter.serialNumber, e.getDeviceSerialNumber(), len(TiltData._all ))     
+            if twister.serialNumber == e.getDeviceSerialNumber():
+                #print(repr(tilter), len(TiltData._all ))     
+                if twister:
+                    twister.ingestTwistData(channel, positionChange, timeChange)
 
