@@ -69,7 +69,7 @@ class TwistData:
         ##for ch in range(4):
         ##    sensordiff = sensordiff - self.deltas[ch]
         if self.delta:
-            TwistData._logger.warning('Encoder update: %s', "ch: %d delta: %d NewPos: %d" %(channel, self.delta, TwistData._twister[sensorNum].getPosition()), extra=d)
+            TwistData._logger.warning('Encoder update: %s', "ch: %d delta: %d NewPos: %d" %(channel, self.delta, TwistData._twister[sensorNum].getPosition()), extra={})
         self.elapsedTime = time
         self.twistHistory.enqueue( self.delta * self.config['flipZ'])
 
