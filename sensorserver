@@ -5,7 +5,7 @@ cd ~pi/phidgetwebsockets/python
 while true
 do
 
-	./tiltyserver.py --tiltSampleRate 0.02 --loglevel warning --flipX 1 --flipY -1 --flipZ -1 --tiltThreshold 0.013
+	./tiltyserver.py --tiltSampleRate 0.02 --loglevel warning --flipX 1 --flipY -1 --flipZ -1 --tiltThreshold 0.013 --LEDpullUp 1
 	sleep 30
 done
 cd /

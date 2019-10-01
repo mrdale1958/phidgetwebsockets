@@ -78,6 +78,10 @@ parser.add_argument('--usePhidgets',
                     default=1,
                     help='useful for testing switches or other non-phidget sensors')
 
+parser.add_argument('--LEDpullUp',
+			type=int, dest='LEDpullUp',
+			default=1,
+			help='logic for leds that go high or low')
 args = parser.parse_args()
 
 print(args)
@@ -112,6 +116,7 @@ config = {
     'flipX' : args.flipX,
     'flipY' : args.flipY,
     'flipZ' : args.flipZ,
+    'LEDpullUp' : args.LEDpullUp,
 }
 
 if args.usePhidgets:
@@ -142,11 +147,11 @@ else:
     tiltdata=None
     
 litSwitches = {
-         'e': { 'led' : LED(18), 'switch': Switch(4) }, 
-         'c': { 'led' : LED(23), 'switch': Switch(17) }, 
-         'j': { 'led' : LED(24), 'switch': Switch(27) }, 
-         'k': { 'led' : LED(25), 'switch': Switch(22) }, 
-         's': { 'led' : LED(12), 'switch': Switch(5) } 
+         'e': { 'led' : LED(18,config), 'switch': Switch(4) }, 
+         'c': { 'led' : LED(23,config), 'switch': Switch(17) }, 
+         'j': { 'led' : LED(24,config), 'switch': Switch(27) }, 
+         'k': { 'led' : LED(25,config), 'switch': Switch(22) }, 
+         's': { 'led' : LED(12,config), 'switch': Switch(5) } 
     }
 switchData = {}
 for switch in ['e','c','j','k','s']:
