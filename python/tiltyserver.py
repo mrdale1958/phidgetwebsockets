@@ -12,6 +12,9 @@ import sys
 import socket
 import logging
 import argparse
+from LED import LED
+from Switch import Switch
+from  LitSwitchData import LitSwitchData
 from shutil import copyfile
 
 #Phidget specific imports
@@ -69,6 +72,16 @@ parser.add_argument('--flipZ',
                     type=int, dest='flipZ',
                     default=-1,
                     help='change the logic of spin direction on zoom')
+
+parser.add_argument('--usePhidgets',
+                    type=int, dest='usePhidgets',
+                    default=1,
+                    help='useful for testing switches or other non-phidget sensors')
+
+parser.add_argument('--LEDpullUp',
+			type=int, dest='LEDpullUp',
+			default=1,
+			help='logic for leds that go high or low')
 args = parser.parse_args()
 
 print(args)
@@ -104,30 +117,49 @@ config = {
     'flipX' : args.flipX,
     'flipY' : args.flipY,
     'flipZ' : args.flipZ,
+    'LEDpullUp' : args.LEDpullUp,
 }
 
+if args.usePhidgets:
 #Create an encoder object
-try:
-    spindata = SpinData(config=config)
-except RuntimeError as e:
+    try:
+        spindata = SpinData(config=config)
+    except RuntimeError as e:
 
-    d = {'clientip': local_ip_address, 'user': 'pi'}
-    logger.error('Spin server starting error: %s', "Runtime spinner Exception: %s" % e.details, extra=d)
-    # exit(1)
+        d = {'clientip': local_ip_address, 'user': 'pi'}
+        logger.error('Spin server starting error: %s', "Runtime spinner Exception: %s" % e.details, extra=d)
+        # exit(1)
+else:
+    spindata = None
+    
+if args.usePhidgets:
+    #Create an accelerometer object
+    try:
+        tiltdata = TiltData(config=config)
 
-#Create an accelerometer object
-try:
-    tiltdata = TiltData(config=config)
+    except RuntimeError as e:
+        print()
+        print("Exiting....")
+        d = {'clientip': local_ip_address, 'user': 'pi'}
 
-except RuntimeError as e:
-    print()
-    print("Exiting....")
-    d = {'clientip': local_ip_address, 'user': 'pi'}
-
-    logger.error('Tilt server starting error: %s', "Runtime Exception: %s" % e.details, extra=d)
-    exit(1)
-
-  
+        logger.error('Tilt server starting error: %s', "Runtime Exception: %s" % e.details, extra=d)
+        exit(1)
+else:
+    tiltdata=None
+    
+litSwitches = {
+         'e': { 'led' : LED(18,config), 'switch': Switch(4) }, 
+         'c': { 'led' : LED(23,config), 'switch': Switch(17) }, 
+         'j': { 'led' : LED(24,config), 'switch': Switch(27) }, 
+         'k': { 'led' : LED(25,config), 'switch': Switch(22) }, 
+         's': { 'led' : LED(12,config), 'switch': Switch(5) } 
+    }
+switchData = {}
+for switch in ['e','c','j','k','s']:
+    languageSensor = { 'outChar' : switch,
+                                             'hardware': litSwitches[switch] }
+    switchData[switch] = LitSwitchData(config, languageSensor)
+        
 
 
 testgp = None # TestHarnessGestureProcessor(None, config)
@@ -136,13 +168,17 @@ testgp = None # TestHarnessGestureProcessor(None, config)
 async def tilt(websocket, path):
     d = {'clientip': local_ip_address, 'user': 'pi', }
     logger.info('Websocket connection made: %s', "tilt server %s port %d path %s" % (websocket.remote_address[0], websocket.remote_address[1], path), extra=d)
-    tiltdata.level_table()
+    if tiltdata:
+        tiltdata.level_table()
     try:
+        logger.info('3 Websocket connection made: %s', "tilt server %s port %d path %s" % (websocket.remote_address[0], websocket.remote_address[1], path), extra=d)
+        logger.info('preparing for polling %s', "hmmm %s" % "foo", extra=d)
         while True:
             now = datetime.datetime.utcnow().isoformat() + 'Z'
+            #logger.info('polling %s', "hmmm %s" % "bar", extra=d)
+                
             if (testgp and testgp.run()):
                 outbound_message = testgp.nextAction()
-                d = {'clientip': local_ip_address, 'user': 'pi' }
                 logger.info('sending test data: %s', "testgp next action=%s" % outbound_message, extra=d)
                 try:
                     await websocket.send(outbound_message)
@@ -150,7 +186,21 @@ async def tilt(websocket, path):
                     d = {'clientip': local_ip_address, 'user': 'pi' }
                     logger.info('sending test data: %s', "client went away=%s" % outbound_message, extra=d)
                     break           
-            if (tiltdata.gestureProcessor.run()):
+            for switch in switchData:
+                #logger.info('polling switches: %s', "switch=%s" % repr(switchData[switch].gestureProcessor), extra=d)
+
+                if (switchData[switch].gestureProcessor.run()):
+                    outbound_message = switchData[switch].gestureProcessor.nextAction()
+                    logger.info('sending switch data: %s', "switch nextAction=%s" % outbound_message, extra=d)
+                    try:
+                        await websocket.send(outbound_message)
+                    except websockets.exceptions.ConnectionClosed:
+                        logger.info('sending switch data: %s', "client went away=%s" % outbound_message, extra=d)
+                        break
+                #else:
+                    #logger.info('no data switches: %s', "switch=%s" % repr(switchData[switch]), extra=d)
+                    
+            if (tiltdata and tiltdata.gestureProcessor.run()):
                 outbound_message = tiltdata.gestureProcessor.nextAction()
                 d = {'clientip': local_ip_address, 'user': 'pi'}
                 logger.info('sending tilt data: %s', "tilt nextAction=%s" % outbound_message, extra=d)
@@ -160,7 +210,7 @@ async def tilt(websocket, path):
                     d = {'clientip': local_ip_address, 'user': 'pi' }
                     logger.info('sending tilt data: %s', "client went away=%s" % outbound_message, extra=d)
                     break
-            if (spindata.gestureProcessor.run()):
+            if (spindata and spindata.gestureProcessor.run()):
                 outbound_message = spindata.gestureProcessor.nextAction()
                 d = {'clientip': local_ip_address, 'user': 'pi' }
                 logger.info('sending spin data: %s', "spin gp nextAction=%s" % outbound_message, extra=d)

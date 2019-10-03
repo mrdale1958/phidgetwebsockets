@@ -18,7 +18,33 @@ class GestureProcessor:
         #if retval:
         #    print(repr(retval))
         return json.dumps(retval) 
-     
+
+class SwitchGestureProcessor(GestureProcessor):
+    def __init__(self,sensor,config):
+        GestureProcessor.__init__(self,sensor,config)
+        self.outchar = config['outChar']
+        
+    def run(self):
+        if self.sensor:
+#            print("switch status", self.sensor['switch'].status, self.sensor['switch'].pin)
+            if self.sensor['switch'].status:
+                print('actuating switch')
+                self.sensor['switch'].clear()
+                self.sensor['led'].on()
+                self.action = { 'gesture': 'switchCode',
+                        'vector': {
+                            'code': self.outchar
+                        }}
+                print(self.action)
+                return True
+            else:
+                #print('turn led off',repr(self.sensor['led']))
+                self.sensor['led'].off()
+                #print('turned led off')
+        return False
+
+
+        
 class SpinGestureProcessor(GestureProcessor):
     def __init__(self,sensor,config):
         GestureProcessor.__init__(self,sensor,config)
