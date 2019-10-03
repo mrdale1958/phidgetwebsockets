@@ -50,6 +50,7 @@ class SpinGestureProcessor(GestureProcessor):
         self.position = 0.0
         self.rate = 0.0
         self.delta = 0
+        self.config = config
 
     def getSpin(self):
         retval = False
@@ -79,20 +80,35 @@ class TiltGestureProcessor(GestureProcessor):
         self.Xtilt = 0.0
         self.Ytilt = 0.0
 
+
     def getTilt(self):
         retval = False
         if self.sensor.components[0].size() and self.sensor.components[1].size():
-            newXtilt = sum(self.sensor.components[0].items) / self.sensor.components[0].size()
+            if self.config['swapXY']:
+                newXtilt = sum(self.sensor.components[1].items) / self.sensor.components[1].size()
+            else:
+                newXtilt = sum(self.sensor.components[0].items) / self.sensor.components[0].size()
+            newXtilt = self.config['flipX']*newXtilt
             if (abs(newXtilt) > self.config['tiltThreshold']):
                 #if (abs(newXtilt-self.Xtilt) > 0.01):
-                self.Xtilt = newXtilt
+                if newXtilt > 0:
+                    self.Xtilt = newXtilt - self.config['tiltThreshold']
+                else:
+                    self.Xtilt = newXtilt + self.config['tiltThreshold']
                 retval = True
             else:
                 self.Xtilt = 0.0
-            newYtilt = sum(self.sensor.components[1].items) / self.sensor.components[1].size()
+            if self.config['swapXY']:
+                newYtilt = sum(self.sensor.components[0].items) / self.sensor.components[0].size()
+            else:
+                newYtilt = sum(self.sensor.components[1].items) / self.sensor.components[1].size()
+            newYtilt = self.config['flipY']*newYtilt
             if (abs(newYtilt) > self.config['tiltThreshold']):
                 #if (abs(newYtilt-self.Ytilt) > 0.01):
-                self.Ytilt = newYtilt
+                if newYtilt > 0:
+                    self.Ytilt = newYtilt - self.config['tiltThreshold']
+                else:
+                    self.Ytilt = newYtilt + self.config['tiltThreshold']
                 retval = True
             else:
                 self.Ytilt = 0.0

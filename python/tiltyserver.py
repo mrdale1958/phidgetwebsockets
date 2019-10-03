@@ -73,15 +73,20 @@ parser.add_argument('--flipZ',
                     default=-1,
                     help='change the logic of spin direction on zoom')
 
+parser.add_argument('--swapXY', 
+                    type=int, dest='swapXY',
+                    default=0,
+                    help='when the table gets rotated 90 wrt the projector')
+
 parser.add_argument('--usePhidgets',
                     type=int, dest='usePhidgets',
                     default=1,
                     help='useful for testing switches or other non-phidget sensors')
 
 parser.add_argument('--LEDpullUp',
-			type=int, dest='LEDpullUp',
-			default=1,
-			help='logic for leds that go high or low')
+            type=int, dest='LEDpullUp',
+            default=1,
+            help='logic for leds that go high or low')
 args = parser.parse_args()
 
 print(args)
@@ -116,6 +121,7 @@ config = {
     'flipX' : args.flipX,
     'flipY' : args.flipY,
     'flipZ' : args.flipZ,
+    'swapXY' : args.swapXY,
     'LEDpullUp' : args.LEDpullUp,
 }
 
@@ -200,9 +206,12 @@ async def tilt(websocket, path):
                     #logger.info('no data switches: %s', "switch=%s" % repr(switchData[switch]), extra=d)
                     
             if (tiltdata and tiltdata.gestureProcessor.run()):
-                outbound_message = tiltdata.gestureProcessor.nextAction()
-                d = {'clientip': local_ip_address, 'user': 'pi'}
-                logger.info('sending tilt data: %s', "tilt nextAction=%s" % outbound_message, extra=d)
+                try:
+                    outbound_message = tiltdata.gestureProcessor.nextAction()
+                    d = {'clientip': local_ip_address, 'user': 'pi'}
+                    logger.info('sending tilt data: %s', "tilt nextAction=%s" % outbound_message, extra=d)
+                except Exception:
+                     logger.info('error sending tilt data: %s', "tilt nextAction=%s" % outbound_message, extra=d)
                 try:
                     await websocket.send(outbound_message)
                 except websockets.exceptions.ConnectionClosed:

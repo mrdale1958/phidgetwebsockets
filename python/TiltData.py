@@ -69,8 +69,8 @@ class TiltData:
     def ingestSpatialData(self, sensorData):
         if self.components[0].size() == 0:
             self.setZeros(sensorData.Acceleration[0],sensorData.Acceleration[1],sensorData.Acceleration[2])
-        newX = config['flipX'] * (sensorData.Acceleration[0] - self.zeros[0])
-        newY = config['flipY'] * (sensorData.Acceleration[1] - self.zeros[1])
+        newX = self.config['flipX'] * (sensorData.Acceleration[0] - self.zeros[0])
+        newY = self.config['flipY'] * (sensorData.Acceleration[1] - self.zeros[1])
         newZ = sensorData.Acceleration[2] - self.zeros[2]
         self.variances[0].enqueue(newX - self.components[0].head())
         self.variances[1].enqueue(newY - self.components[1].head())
@@ -83,18 +83,18 @@ class TiltData:
         for index in range(3):
             if self.components[index].size() == 0:
                 self.set_accelerometerZero(index,sensorData[index])
-            newX = sensorData[index] - self.zeros[index]
-            self.variances[index].enqueue(newX - self.components[index].head())
-            self.components[index].enqueue(newX)
+            newAccelData = sensorData[index] - self.zeros[index]
+            self.variances[index].enqueue(newAccelData - self.components[index].head())
+            self.components[index].enqueue(newAccelData)
  
 
                       
     def getJSON(self):
         jsonBundle = { 'type':        'tilt',
                     'packet': { 'sensorID':  '',
-                    'tiltX': 0.0,
-                    'tiltY': 0.0
-                    }
+                                'tiltX': 0.0,
+                                'tiltY': 0.0
+                                }
                    }
         return(JSON.dumps(jsonBundle))
     
