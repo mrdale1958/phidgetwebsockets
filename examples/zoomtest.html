@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>WebSocket demo</title>
+<title>GeoConnecTable</title> 
+  <meta content="initial-scale=1.0, user-scalable=no" name="viewport" /> 
+  <meta charset="utf-8" /> 
+   <style>
+            #iw_bodyContent {
+                background-color: #b0c4de;
+            }
+            html, body{
+                 height: 100%;
+               margin: 0px;
+                padding: 0px;
+            }
+            #map-canvas {
+                height: 500px;
+                width:1440px;
+            }
+            #map-mask {
+                position:fixed;
+                top: 0px;
+                left:0px;
+                pointer-events: none;
+
+            }
+        </style>   
+    </head>
+    <body>
+         <div id="map-canvas"></div>
+         <div id="map-mask"><img src="mask.png"/> </div>
+       <div id="EncoderStatus">EncoderID: <div id="EncoderID"/> Index: <div id="EncoderIndex"/> Change:  <div id="EncoderDelta"/> Time:  <div id="EncoderElapsedTime"/> Position:  <div id="EncoderPosition"/> </div>
+        <div id="TiltStatus">TiltsensorID: <div id="TiltsensorID"/> X: <div id="TiltX"/> Y:  <div id="TiltY"/> Magnitude:  <div id="TiltMagnitude"/> </div>
+    <script>
+ var mapStyle = 
+[{"elementType":"labels.text","stylers":[{"visibility":"off"}]},{"featureType":"landscape.natural","elementType":"geometry.fill","stylers":[{"color":"#f5f5f2"},{"visibility":"on"}]},{"featureType":"administrative","stylers":[{"visibility":"off"}]},{"featureType":"transit","stylers":[{"visibility":"off"}]},{"featureType":"poi.attraction","stylers":[{"visibility":"off"}]},{"featureType":"landscape.man_made","elementType":"geometry.fill","stylers":[{"color":"#ffffff"},{"visibility":"on"}]},{"featureType":"poi.business","stylers":[{"visibility":"off"}]},{"featureType":"poi.medical","stylers":[{"visibility":"off"}]},{"featureType":"poi.place_of_worship","stylers":[{"visibility":"off"}]},{"featureType":"poi.school","stylers":[{"visibility":"off"}]},{"featureType":"poi.sports_complex","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#ffffff"},{"visibility":"simplified"}]},{"featureType":"road.arterial","stylers":[{"visibility":"simplified"},{"color":"#ffffff"}]},{"featureType":"road.highway","elementType":"labels.icon","stylers":[{"color":"#ffffff"},{"visibility":"off"}]},{"featureType":"road.highway","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.arterial","stylers":[{"color":"#ffffff"}]},{"featureType":"road.local","stylers":[{"color":"#ffffff"}]},{"featureType":"poi.park","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"water","stylers":[{"color":"#71c8d4"}]},{"featureType":"landscape","stylers":[{"color":"#e5e8e7"}]},{"featureType":"poi.park","stylers":[{"color":"#8ba129"}]},{"featureType":"road","stylers":[{"color":"#ffffff"}]},{"featureType":"poi.sports_complex","elementType":"geometry","stylers":[{"color":"#c7c7c7"},{"visibility":"off"}]},{"featureType":"water","stylers":[{"color":"#a0d3d3"}]},{"featureType":"poi.park","stylers":[{"color":"#91b65d"}]},{"featureType":"poi.park","stylers":[{"gamma":1.51}]},{"featureType":"road.local","stylers":[{"visibility":"off"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"visibility":"on"}]},{"featureType":"poi.government","elementType":"geometry","stylers":[{"visibility":"off"}]},{"featureType":"landscape","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"visibility":"simplified"}]},{"featureType":"road.local","stylers":[{"visibility":"simplified"}]},{"featureType":"road"},{"featureType":"road"},{},{"featureType":"road.highway"}] ;
+          var styledMapOptions = {
+                name : "GeoConnecTable"
+            }
+
+ 
+
+            var MARKERS = [];
+
+            var map = null;
+
+            var mapType = null;
+
+            var marker = null;
+
+
+            var myLocation = null;
+            var floatZoom = 14.0;
+
+           function initialize() {
+                if (map == null) {
+                 var mapOptions = {
+                    center: {lat: 40.722518, lng: -73.990933},
+                    zoom : 14,
+                    disableDefaultUI: true,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                };
+                  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+                  document.getElementById('map-canvas')['style'].width = "1440px";
+                  document.getElementById('map-canvas')['style'].height = "500px";
+                    //mapType = new google.maps.StyledMapType(mapStyle, styledMapOptions);
+                    //map.mapTypes.set('geoconnectable', mapType);
+                    //map.setMapTypeId('geoconnectable');
+                    //myLocation = new google.maps.LatLng(40.722518, -73.990933);
+
+                }
+                    window.setTimeout(zoomOut, 3000);
+
+            };
+            var zoomIncrement = 0.0001;
+            var zoomDelay = 3000;
+
+            //google.maps.event.addDomListener(window, 'load', initialize);
+            function zoomOut() {
+                var vp = document.getElementById('map-canvas');
+                 var currentViewport = map.getBounds();
+               var currentCenter = currentViewport.getCenter();
+                var ne = currentViewport.getNorthEast();
+                var sw = currentViewport.getSouthWest();
+                var currentHeight = ne.lat() - sw.lat();
+                var currentWidth = ne.lng() - sw.lng();
+                var newNE = new google.maps.LatLng(ne.lat() + zoomIncrement*currentHeight, ne.lng() + zoomIncrement*currentWidth);
+                var newSW = new google.maps.LatLng(sw.lat() - zoomIncrement*currentHeight, sw.lng() - zoomIncrement*currentWidth);
+                newBounds = new google.maps.LatLngBounds(newSW,newNE);
+                //map.panTo(newBounds.getCenter());
+                var curWidth = parseInt(vp['style'].width);
+                var curHeight = parseInt(vp['style'].height);
+                vp['style'].width = (curWidth*0.9) + "px";
+                vp['style'].height = (curHeight*0.9) + "px";
+
+                google.maps.event.addListenerOnce(map, 'idle', function() {
+                  //map.fitBounds(newBounds);
+                });
+
+                console.log("zoomOut ", currentWidth, currentHeight, ne.toString(), newNE.toString());
+                if (ne.lat() < 50) {
+                    window.setTimeout(zoomOut, zoomDelay);
+                } else {
+                    window.setTimeout(zoomIn, zoomDelay);
+                }
+
+            };
+            function zoomIn() {
+                var currentViewport = map.getBounds();
+                var currentCenter = currentViewport.getCenter();
+                var ne = currentViewport.getNorthEast();
+                var sw = currentViewport.getSouthWest();
+                var newNE = new google.maps.LatLng(ne.lat() - zoomIncrement, ne.lng() - zoomIncrement);
+                var newSW = new google.maps.LatLng(sw.lat() + zoomIncrement, sw.lng() + zoomIncrement);
+                newBounds = new google.maps.LatLngBounds(newSW,newNE);
+                //map.panTo(newBounds.getCenter());
+                google.maps.event.addListenerOnce(map, 'idle', function() {
+                  //map.fitBounds(newBounds);
+                });
+                console.log("zoomIn  ", newNE.toString(), newSW.toString());
+                if (newNE.lat() - newSW.lat() > 0.2) {
+                    window.setTimeout(zoomIn, zoomDelay);
+                } else {
+                    window.setTimeout(zoomOut, zoomDelay);
+                }
+
+            };
+        </script>
+ <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9mTlIuf4wMXE1q5aIyqFrnmi820eJedg&callback=initialize"
+    async defer></script>
+
+    </body>
+</html>

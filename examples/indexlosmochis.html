@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html>
+    <head>
+<script src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyD2YKbGfu2sbJl0ap0NnHQiZhBrNvrpKX8&callback=initialize"
+    async defer></script>
+        <title>Los Mochis Tilty</title>
+<title>GeoConnecTable</title> 
+  <meta content="initial-scale=1.0, user-scalable=no" name="viewport" /> 
+  <meta charset="utf-8" /> 
+   <style>
+            #iw_bodyContent {
+                background-color: #b0c4de;
+            }
+            html, body{
+                 height: 100%;
+               margin: 0px;
+                padding: 0px;
+                 background-color: black;
+           }
+            #map-canvas {
+                height: 1080px;
+                width : 1080px;
+                margin-left: 420px;
+                background-color: black;
+            }
+            #map-mask {
+               position:fixed;
+                top: 0px;
+                left:420px;
+                pointer-events: none;
+
+            }
+            .instructions {
+                border-color: red;
+                border-width: 2px;
+               position:fixed;
+                top: 400px;
+                left:820px;
+                
+            }
+
+            img{
+              
+                -webkit-transition: 3s;
+                -moz-transition: 3s;
+                -ms-transition: 3s;
+                -o-transition: 3s;
+                transition: 3s; 
+                margin-left: 0px;
+                margin-top: 0px;   
+                width: 0px;
+                height: 0px;
+              }
+
+             img.open {
+                -webkit-transition: 3s;
+                -moz-transition: 3s;
+                -ms-transition: 3s;
+                -o-transition: 3s;
+                transition: 3s; 
+                width: 828px;
+                height: 762px;
+                margin-left: -284px;
+                margin-top: -221px;
+            }
+
+            img.fixedmask {
+                -webkit-transition: 3s;
+                -moz-transition: 3s;
+                -ms-transition: 3s;
+                -o-transition: 3s;
+                transition: 3s; 
+                width: 1080px;
+                height: 1080px;
+                margin-left: 0px;
+                margin-top: 0px;
+            }
+           
+            .instructions .spanish {
+                
+            }
+            .instructions .english {
+                font-style:italic;
+                
+            }
+            .overview {
+                border-color: blue;
+                 border-width: 2px;
+              position:fixed;
+                top: 400px;
+                left:820px;
+            }
+            .overview .spanish {
+                
+            }
+            .overview .english {
+                font-style:italic;
+                
+            }
+            .state {
+                border-color: green;
+                border-width: 2px;
+               position:fixed;
+                top: 400px;
+                left:820px;
+            }
+            .state .site_name {
+                font-weight: bold;
+                display: none;
+                
+            }
+            .state .spanish {
+                
+            }
+            .state .english {
+                 font-style:italic;
+               
+            }
+            .county {
+               position:fixed;
+                top: 400px;
+                left:820px;
+                border-color: magenta;
+                border-width: 2px;
+            }
+           .county .site_name {
+                display: none;
+            }
+            .county .spanish {
+                
+            }
+            .county .english {
+                 font-style:italic;
+               
+            }
+            .city {
+               position:fixed;
+                top: 400px;
+                left:820px;
+                border-color: yellow;
+                border-width: 2px;
+            }
+           .city .site_name {
+                              display: none;
+  
+            }
+            .city .spanish {
+                
+            }
+            .city .english {
+                 font-style:italic;
+               
+            }
+
+            #site1 {
+                display:block;
+            }
+           #site2 {
+                display:block;
+            }
+           #site3 {
+                display:block;
+            }
+           #site4 {
+                display:block;
+            }
+           #site5 {
+                display:block;
+            }
+           #site6 {
+                display:block;
+            }
+           #site7 {
+                display:block;
+            }
+           #site8 {
+                display:block;
+            }
+           #site9 {
+                display:block;
+            }
+           #site10 {
+                display:block;
+            }
+           #site11 {
+                display:block;
+            }
+           #site12 {
+                display:block;
+            }
+           #site13 {
+                display:block;
+            }
+           #site14 {
+                display:block;
+            }
+           #site15 {
+                display:block;
+            }
+           #site16 {
+                display:block;
+            }
+           #site17 {
+                display:block;
+            }
+
+#container { }
+
+#circle { position: relative;  overflow: hidden; pointer-events:none;}
+
+#circle text { font-family: 'Helvetica Neue', Arial; font-size: 36px; font-weight: bold; }
+
+#circle svg { position: fixed; left: 420px; top: 0; width: 1080px; height: 1080px; }
+#circlespinning svg { position: fixed; left: 0; top: 0; width: 100%; height: 100%;
+
+  -webkit-animation-name: rotate;
+     -moz-animation-name: rotate;
+      -ms-animation-name: rotate;
+       -o-animation-name: rotate;
+          animation-name: rotate;
+  -webkit-animation-duration: 5s;
+     -moz-animation-duration: 5s;
+      -ms-animation-duration: 5s;
+       -o-animation-duration: 5s;
+          animation-duration: 5s;
+  -webkit-animation-iteration-count: infinite;
+     -moz-animation-iteration-count: infinite;
+      -ms-animation-iteration-count: infinite;
+       -o-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+     -moz-animation-timing-function: linear;
+      -ms-animation-timing-function: linear;
+       -o-animation-timing-function: linear;
+          animation-timing-function: linear;
+
+}
+
+@-webkit-keyframes rotate {
+    from { -webkit-transform: rotate(360deg); }
+    to { -webkit-transform: rotate(0); }
+}
+@-moz-keyframes rotate {
+    from { -moz-transform: rotate(360deg); }
+    to { -moz-transform: rotate(0); }
+}
+@-ms-keyframes rotate {
+    from { -ms-transform: rotate(360deg); }
+    to { -ms-transform: rotate(0); }
+}
+@-o-keyframes rotate {
+    from { -o-transform: rotate(360deg); }
+    to { -o-transform: rotate(0); }
+}
+@keyframes rotate {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0); }
+}        </style>   
+    </head>
+    <body>
+       <div id="map-canvas"></div>
+         <div id="map-mask"><img src="mask.png" class="open fixedmask" width="1080" height="1080"/> </div>
+      <!-- <div>Encoder status: <div id="EncoderStatus"></div></div>
+       <div>EncoderID: <div id="EncoderID"></div></div>
+        <div>Index: <div id="EncoderIndex"></div> </div>
+        <div>Change:  <div id="EncoderDelta"> </div></div>
+        <div>Time:  <div id="EncoderElapsedTime"> </div></div>
+        <div>Position:  <div id="EncoderPosition"> </div></div>
+        <div>Tilt status: <div id="TiltStatus"></div></div>
+        <div>TiltsensorID: <div id="TiltsensorID"> </div></div>
+        <div>X: <div id="TiltX"> </div></div>
+        <div>Y:  <div id="TiltY"> </div></div>
+        <div>Magnitude:  <div id="TiltMagnitude"> </div></div>-->
+    <script>
+    
+
+var zoomLayers = {
+    '15': {"site16": true,
+          "Ahome" : false },
+    '16': {"site17": true,
+          "Ahome" : false },
+    '12': {},
+    '13': {},
+    '14': {},
+    '17': {},
+    '18': {},
+    '19': {},
+      '3' : { 'site1' : true },
+      '4' : { "Mexico" : false ,
+            'site2' : true },
+      '5' : { "Mexico" : false,
+            'site3' : true },
+      '6' : { "Distrito Federal" : false, 
+                    "Sinaloa"  : false,
+                    "Chihuahua" : false,
+                    "Guerrero"  : false,
+                    "Veracruz de Ignacio de la Llave" : false,
+                    "site4" : true },
+      '7' : { "Distrito Federal" : "site6", 
+                    "Sinaloa"  : "site5",
+                    "Chihuahua" : "site8",
+                    "Guerrero"  : "site9",
+                    "Veracruz de Ignacio de la Llave" : "site7" },
+      '8': {},
+      '9': {},
+
+      '10': { "site10": true,
+                    "Escuinapa" : false,
+                    "Sinaloa"  : false,
+                    "Elota" : false,
+                    "El Fuerte" : false,
+                    "CuliacÃ¡n" : false,
+                    "Badiraguato" : false,
+                    "Guasave" : false,
+                    "San Ignacio" : false,
+                    "Concordia" : false,
+                    "Navolato" : false,
+                    "Mocorito" : false,
+                    "Rosario" : false,
+                    "Angostura" : false,
+                    "Choix" : false,
+                    "CosalÃ¡" : false,
+                    "MazatlÃ¡n" : false,
+                    "Salvador Alvarado" : false,
+                    "Ahome"  : false },
+     '11': { "Escuinapa" : false,
+                    "Sinaloa"  : false,
+                    "Elota" : false,
+                    "El Fuerte" : false,
+                    "CuliacÃ¡n" : "site13",
+                    "Badiraguato" : "site14",
+                    "Guasave" : false,
+                    "San Ignacio" : false,
+                    "Concordia" : false,
+                    "Navolato" : false,
+                    "Mocorito" : false,
+                    "Rosario" : false,
+                    "Angostura" : false,
+                    "Choix" : false,
+                    "CosalÃ¡" : false,
+                    "MazatlÃ¡n" : "site12",
+                    "Salvador Alvarado" : "site15",
+                    "Ahome"  : "site11" },
+     };
+
+     var hotspot = {};
+     	
+   var lastZoom = 0;
+  function doZoom(newLayer)
+  {
+
+    // could get optimized to not unload a feture we know we are about to load
+
+    if (newLayer == lastZoom) return;
+    currentFeatureSet = zoomLayers[lastZoom];
+    for (featureKey in currentFeatureSet)
+    {
+        if ( currentFeatureSet[featureKey] == true)
+        {
+          document.getElementById(featureKey + "_img").classList.remove('open');
+        } 
+        else
+        {
+          //unload the feature
+          if ( typeof(currentFeatureSet[featureKey]) == "string" )
+          {
+            //close badge named currentFeatureSet[featureKey] if open
+          }
+         }
+    }
+    activeHotSpots = {};
+    nextFeatureSet = zoomLayers[newLayer];
+    for (featureKey in nextFeatureSet) 
+    {
+       if (  nextFeatureSet[featureKey] == true)
+        {
+          //fly to hotspot[featureKey] and open the badge
+          map.panTo(hotspot[featureKey]);
+          document.getElementById(featureKey + "_img").classList.add('open');
+
+          //set instructions to spin clockwise to conitinue tour counterclockwise to go back
+        } 
+        else
+        {
+          // load the feature
+          if ( typeof(nextFeatureSet[featureKey]) == "string" )
+          {
+            activeHotSpots[featureKey] = nextFeatureSet[featureKey];
+            //mark feature as active
+            //set instructions to "fly around by tilting, then zoom in on the active regions"
+          }
+        }
+
+    }
+    lastZoom = map.getZoom();
+
+  }
+
+  var features = {
+  	"Sinaloa" : 'encuesta_intercensal_2015/shps/sin/sin_entidad.geojson',
+  	"Chihuahua" : 'encuesta_intercensal_2015/shps/chih/chih_entidad.geojson',
+  	"Guerrero" : 'encuesta_intercensal_2015/shps/gro/gro_entidad.geojson',
+  	"Veracruz" : 'encuesta_intercensal_2015/shps/ver/ver_entidad.geojson',
+  	"Sinaloa_counties" : 'encuesta_intercensal_2015/shps/sin/sin_municipio.geojson',
+  	"df" : 'encuesta_intercensal_2015/shps/df/df_entidad.geojson',
+  	"mexico" : 'MEX_adm0.geojson',
+  }
+
+  var loadedFeatures = [];
+                    
+            var trapiche = null;
+            var floatZoom = 14.0;
+            var mexicoCenter = null;
+            var mexicoFullZoom = 5;
+            var maxZoom = 19;
+            var minZoom = 3;
+            var map;
+            function shapeloaded(features)
+            {
+            	map.data.forEach(function(feature){
+            		loadedFeatures.push(feature);
+            		map.data.remove(feature);
+                console.log("is feature added loadGeoJson first? or callback?");
+            	});
+              //console.log("got " + features.length + " new features");
+              
+            }
+
+           function initialize() {
+                if (map == null) {
+                 var mapOptions = {
+                    center: mexicoCenter,
+                    zoom : minZoom,
+                    disableDefaultUI: true,
+                    backgroundColor: '#000000',
+                    mapTypeId: google.maps.MapTypeId.HYBRID,
+                };
+                     //mapTypeId: google.maps.MapTypeId.HYBRID,
+                 map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+                    //mapType = new google.maps.StyledMapType(mapStyle, styledMapOptions);
+                    //map.mapTypes.set('geoconnectable', mapType);
+                    //map.setMapTypeId('geoconnectable');
+                    featuresets = {} ;
+                    map.data.addListener('addfeature', function(e) {
+                console.log("is feature added callback first? or loadGeoJson?");
+                      var name = e.feature.getProperty("NOMGEO");
+                      if (! name ) 
+                      {
+                        name = e.feature.getProperty("NAME_FAO");
+                        if (! name ) name = "idunno";
+                      }
+                       featuresets[name] = e.feature;
+                       console.log(name);
+                       //map.data.remove(e.feature);
+                       
+                    });
+                    hotspot = {
+                    	"site1" : new google.maps.LatLng(19.4326077,-99.1332080),
+				     	"site2" : new google.maps.LatLng(19.4326077,-99.1332080),
+				     	"site3" : new google.maps.LatLng(19.4326077,-99.1332080),
+				     	"site4" : new google.maps.LatLng(19.4326077,-99.1332080),
+				     	"site5" : new google.maps.LatLng(25.1721091,-107.4795173),
+				     	"site6" : new google.maps.LatLng(19.4326077,-99.1332080),
+				     	"site7" : new google.maps.LatLng(19.1737730,-96.1342241),
+				     	"site8" : new google.maps.LatLng(28.6329957,-106.0691004),
+				     	"site9" : new google.maps.LatLng(17.4391926,-99.5450974),
+				     	"site10" : new google.maps.LatLng(25.1721091,-107.4795173),
+				     	"site11" : new google.maps.LatLng(25.9197727,-109.1746261),
+				     	"site12" : new google.maps.LatLng(23.2683360,-106.3997339),
+				     	"site13" : new google.maps.LatLng(24.7881148,-107.3737955),
+				     	"site14" : new google.maps.LatLng(25.3628494,-107.5498614),
+				     	"site15" : new google.maps.LatLng(25.4606326,-108.0785167),
+				     	"site16" : new google.maps.LatLng(25.9197727,-109.1746261),
+				     	"site17" : new google.maps.LatLng(25.7904657,-108.9858820),
+
+     }
+                    map.addListener('zoom_changed', function()
+                    {
+                      console.log("got new zoom", map.getZoom(), zoomLayers[map.getZoom()]);
+                      doZoom(map.getZoom());
+                      //map.data.forEach(function (feature) { map.data.remove(feature);});
+                    });
+                    mexicoCenter = new google.maps.LatLng(23.43348438907877, -103.05326881250002);
+                    trapiche = new google.maps.LatLng(25.790466,-108.985886);
+//map.data.loadGeoJson('encuesta_intercensal_2015/shps/df/df_entidad.geojson', null, shapeloaded);
+                    for ( feature in features)
+                    	map.data.loadGeoJson(features[feature], null, shapeloaded);
+
+                    //map.data.loadGeoJson('encuesta_intercensal_2015/shps/chih/chih_entidad.geojson', null, shapeloaded);
+                    //map.data.loadGeoJson('encuesta_intercensal_2015/shps/gro/gro_entidad.geojson', null, shapeloaded);
+                    //map.data.loadGeoJson('encuesta_intercensal_2015/shps/ver/ver_entidad.geojson', null, shapeloaded);
+                    //map.data.loadGeoJson('encuesta_intercensal_2015/shps/sin/sin_municipio.geojson', null, shapeloaded);
+                    //map.data.loadGeoJson('MEX_adm0.geojson', null, shapeloaded);
+                    //map.data.loadGeoJson('MEX_adm1.geojson', null, shapeloaded);
+                    //map.data.loadGeoJson('MEX_adm2.geojson', null, shapeloaded);
+                    map.data.setStyle({
+                          fillColor: 'yellow',
+                          strokeWeight: 1
+                    });
+                    map.data.addListener('mouseover', function(event) {
+                      map.data.revertStyle();
+                      map.data.overrideStyle(event.feature, {strokeWeight: 8});
+                    });
+                    map.panTo(mexicoCenter);
+                    map.setZoom(minZoom);
+
+                }
+            };
+            var ws = new WebSocket("ws://127.0.0.1:5678/"),
+                messages = document.createElement('ul'),
+                jsonData;
+            var currentScale = 1.0;
+            
+            var clicksPerRev =  256; // weirdly not 3.14159 * 4 *
+            var revsPerFullZoom = (maxZoom - minZoom)/4;
+            var clicksPerZoomLevel =  clicksPerRev / revsPerFullZoom;
+            var maxClicks = clicksPerRev * revsPerFullZoom * 1.0;
+            var currentSpinPosition = 0;
+            ws.onmessage = function (event) {
+                if (! map) return;
+                jsonData = JSON.parse(event.data);
+                if (jsonData.type == 'spin') {
+                    document.getElementById('EncoderID').innerHTML(jsonData.packet.sensorID);
+                    document.getElementById('EncoderIndex').innerHTML(jsonData.packet.encoderIndex);
+                    document.getElementById('EncoderDelta').innerHTML(jsonData.packet.encoderDelta);
+                    document.getElementById('EncoderElapsedTime').innerHTML(jsonData.packet.encoderElapsedTime);
+                    document.getElementById('EncoderPosition').innerHTML(jsonData.packet.encoderPosition);
+                } else if (jsonData.type == 'tilt') {
+                    document.getElementById('TiltsensorID').innerHTML(jsonData.packet.sensorID);
+                    document.getElementById('TiltX').innerHTML(jsonData.packet.tiltX);
+                    document.getElementById('TiltY').innerHTML(jsonData.packet.tiltY);
+                    document.getElementById('TiltMagnitude').innerHTML(jsonData.packet.tiltMagnitude);
+                } else if (jsonData.gesture == 'pan') {
+                	var dampingZoom = map.getZoom()*minZoom/maxZoom;
+
+                    if (jsonData.vector.x == 0.0 && jsonData.vector.y == 0.0) return;                   
+                    //map.panBy(100*jsonData.vector.x, 100*jsonData.vector.y);
+					/*var currentViewport = map.getBounds();
+                    if (!currentViewport) return;
+                    var ne = currentViewport.getNorthEast();
+                    var sw = currentViewport.getSouthWest();
+                    var currentCenter = currentViewport.getCenter();
+                    var newCenter = {lat: -34, lng: 151};
+                    if (jsonData.vector.x > 0.0) {
+                        newCenter.lng = currentCenter.lng() + dampingZoom * jsonData.vector.x * (sw.lng() - currentCenter.lng() );
+                    } else {
+                        newCenter.lng = currentCenter.lng() - dampingZoom * jsonData.vector.x * (ne.lng() - currentCenter.lng() );
+
+                    }
+                    if (jsonData.vector.y > 0.0) {
+                        newCenter.lat = currentCenter.lat() + dampingZoom * jsonData.vector.y * (ne.lat() - currentCenter.lat() );
+                    } else {
+                        newCenter.lat = currentCenter.lat() - dampingZoom * jsonData.vector.y * (sw.lat() - currentCenter.lat() );
+                    }
+                    //console.log("panning to " + newCenter.lat + " " + newCenter.lng + " from " + currentCenter.lat() + "," + currentCenter.lng() + " data " + jsonData.vector.x +"," + jsonData.vector.y);
+                    //map.panTo(newCenter);
+                    */
+                } else if (jsonData.gesture == 'zoom') {
+                    
+                    var currentZoom = map.getZoom();
+                    currentSpinPosition += jsonData.vector.delta;
+                    //console.log(currentSpinPosition);
+                    if (currentSpinPosition < 0) currentSpinPosition = 0;
+                    var proposedZoom = minZoom + Math.floor(currentSpinPosition/clicksPerZoomLevel);
+                    if (proposedZoom != currentZoom) map.setZoom(proposedZoom); 
+                    /*floatZoom = Math.min(maxZoom,Math.max(minZoom, floatZoom * ));
+                    if (Math.floor(floatZoom) != currentZoom) {
+                        document.getElementById('map-canvas').style.transform = "scale(1)";
+                        map.setZoom(Math.floor(floatZoom));
+                    }
+                    else 
+                    {
+                        var newScale = "scale(" + String(1.0 + floatZoom - Math.floor(floatZoom)) + ")";
+                        //console.log("zooming by " + floatZoom + " raw data " + jsonData.vector.delta + " fractional " + newScale);
+                        //document.getElementById('map-canvas').style.transform = newScale;
+                    }
+                    /*var currentViewport = map.getBounds();
+                    var currentCenter = currentViewport.getCenter();
+                    var ne = currentViewport.getNorthEast();
+                    var sw = currentViewport.getSouthWest();
+                    var deltaLat = (ne.lat()-sw.lat())*floatZoom/2;
+                    var deltaLng = (ne.lng()-sw.lng())*floatZoom/2;
+                    console.log(ne.lat(),sw.lat(),ne.lat()-sw.lat());
+                    var newSW = new google.maps.LatLng(currentCenter.lat()-deltaLat, currentCenter.lng()-deltaLng);
+                    var newNE = new google.maps.LatLng(currentCenter.lat()+deltaLat, currentCenter.lng()+deltaLng);
+                    var zoomedBounds = new google.maps.LatLngBounds(newSW, newNE);
+                    //console.log(newNE.lat(),newSW.lat(),newNE.lat()-newSW.lat());
+                    //console.log("zooming by " + floatZoom + " raw data " + jsonData.vector.delta + 
+                    //    " zoom from " + currentViewport + " to " + zoomedBounds +
+                    //    " delta " + deltaLat + "," + deltaLng);
+                    map.panToBounds(zoomedBounds);
+                    //map.panTo(currentCenter);
+                    //document.getElementById('map-canvas').style.transform = "scale(" + String(1.0 + floatZoom - Math.floor(floatZoom)) + ")";
+*/
+
+                    
+                } else { 
+                    var messages = document.getElementsByTagName('ul')[0],
+                        message = document.createElement('li'),
+                        content = document.createTextNode(event.data);
+                    message.appendChild(content);
+                    messages.appendChild(message);
+                }
+ var myLatLng = new google.maps.LatLng(25.790466,-108.985886);
+ var marker = new google.maps.Marker({
+    position: myLatLng,
+    map: map,
+    title: 'Click to zoom'
+  });
+
+  map.addListener('center_changed', function() {
+    // 3 seconds after the center of the map has changed, pan back to the
+    // marker.
+    //window.setTimeout(function() {
+     // map.panTo(marker.getPosition());
+   // }, 3000);
+  });
+
+  marker.addListener('click', function() {
+    map.setZoom(8);
+    map.setCenter(marker.getPosition());
+  });  
+
+
+
+           };
+            document.body.appendChild(messages);
+            //google.maps.event.addDomListener(window, 'load', initialize);
+
+        </script>
+<div class="instructions">
+<div class="spanish">
+</div>
+<div class="english">
+ </div>
+</div> 
+ <div id="container">
+<div id="circle">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="420px" y="0px" width="1080px" height="1080px" viewBox="0 0 1080 1080" enable-background="new 0 0 1080 1080" xml:space="preserve">
+    <defs>
+    <!--
+    (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
+    -->
+        <path id="topArcPath" d=" M 1070, 0 m 0,540 a 400,400 0 1 0 -1060,0  "/>
+        <path id="bottomArcPath" d="  M 10, 0 m 0,540 a 400,-400 0 1 0 1060,0   "/>
+        <path id="leftArcPath" d=" M 540, 10 m 0,0 a 400,400 0 1,0 0,1060  "/>
+        <path id="rightArcPath" d="   M 540, 1070 m 0,0 a 400,400 0 1 0 0,-1060    "/>
+    </defs>
+    <g>
+        <use xlink:href="#topArcPath" fill="none"/>
+        <text fill="#f00">
+            <textPath xlink:href="#topArcPath">rotate clockwise to zoom in</textPath>
+        </text>
+    </g>
+    <g>
+        <use xlink:href="#leftArcPath" fill="none"/>
+        <text fill="#0f0">
+            <textPath xlink:href="#leftArcPath">tilt up/down to move north/south</textPath>
+        </text>
+    </g>
+    <g>
+        <use xlink:href="#bottomArcPath" fill="none"/>
+        <text fill="#00f">
+            <textPath xlink:href="#bottomArcPath">rotate counter clockwise to zoom in</textPath>
+        </text>
+    </g>
+   <g>
+        <use xlink:href="#rightArcPath" fill="none"/>
+        <text fill="#ff0">
+            <textPath xlink:href="#rightArcPath">tilt left/right to move east/west</textPath>
+        </text>
+    </g>
+</svg>
+</div>
+</div>
+
+<script>
+/*var canvas = document.getElementById('textRing');
+ var context = canvas.getContext('2d');
+ var x = canvas.width / 2;
+ var y = canvas.height / 2;
+ var radius = 75;
+ var endPercent = 85;
+ var curPerc = 0;
+ var counterClockwise = false;
+ var circ = Math.PI * 2;
+ var quart = Math.PI / 2;
+
+ context.lineWidth = 10;
+ context.strokeStyle = '#ad2323';
+ context.shadowOffsetX = 0;
+ context.shadowOffsetY = 0;
+ context.shadowBlur = 10;
+ context.shadowColor = '#656565';
+
+
+ function animate(current) {
+     context.clearRect(0, 0, canvas.width, canvas.height);
+     context.beginPath();
+     context.arc(x, y, radius, -(quart), ((circ) * current) - quart, false);
+     context.stroke();
+     curPerc++;
+     if (curPerc < endPercent) {
+         requestAnimationFrame(function () {
+             animate(curPerc / 100)
+         });
+     }
+ }
+ animate(0); */
+
+</script>
+<!--<canvas id="textRing" top="0" left="0" width="1080" height="1080"></canvas>-->
+
+<div class="instructions" id="site1">
+<img src="cedulas/Tilty 1.png" id="site1_img">
+</div>
+<div class="overview" id="site2">
+<img src="cedulas/Tilty 2.png" id="site2_img">
+</div>
+<div class="overview" id="site3">
+<img src="cedulas/Tilty 3.png" id="site3_img">
+</div> 
+
+<div class="overview" id="site4">
+<img src="cedulas/Tilty 4.png" id="site4_img">
+</div>  
+
+<div class="state" id="site5">
+<img src="cedulas/Tilty 5.png" id="site5_img">
+<div class="site_name">Sinaloa</div>
+</div>  
+
+
+<div class="state" id="site6">
+<img src="cedulas/Tilty 6.png" id="site6_img">
+<div class="site_name">Ciudad de México</div>
+</div>  
+
+<div class="state"  id="site7">
+<img src="cedulas/Tilty 7.png" id="site7_img">
+<div class="site_name">Veracruz de Ignacio de la Llave</div>
+</div>  
+
+<div class="state"  id="site8">
+<img src="cedulas/Tilty 8.png" id="site8_img">
+<div class="site_name">Chihuahua</div>
+</div>  
+
+<div class="state"  id="site9">
+<img src="cedulas/Tilty 9.png" id="site9_img">
+<div class="site_name">Guerrero</div>
+</div>  
+
+<div class="overview"  id="site10">
+<img src="cedulas/Tilty 10.png" id="site10_img">
+  
+</div>  
+
+<div class="county"  id="site11">
+<img src="cedulas/Tilty 11.png" id="site11_img">
+<div class="site_name">Ahome</div>
+</div>  
+
+<div class="county"  id="site12">
+<img src="cedulas/Tilty 12.png" id="site12_img">
+<div class="site_name">Mazatlán</div>
+</div>  
+
+<div class="county"  id="site13">
+<img src="cedulas/Tilty 13.png" id="site13_img">
+<div class="site_name">Culiacán</div>
+</div>  
+
+<div class="county"  id="site14">
+<img src="cedulas/Tilty 14.png" id="site14_img">
+<div class="site_name">Badiguarato</div>
+</div>  
+
+<div class="county"  id="site15">
+<img src="cedulas/Tilty 15.png" id="site15_img">
+<div class="site_name">Salvador Alvarado (Guamúchil)</div>
+</div>  
+</div>  
+
+<div class="overview"  id="site16">
+<img src="cedulas/Tilty 16.png" id="site16_img">
+</div>  
+
+
+<div class="city" id="site17">
+<img src="cedulas/Tilty 17.png" id="site17_img">
+<div class="site_name">La Central (Los Mochis)</div>
+</div>  
+
+  </body>
+</html>
+
+
+
+
+
+
+

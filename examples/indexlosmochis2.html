@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Los Mochis Tilty</title>
+    <title>GeoConnecTable</title> 
+    <meta content="initial-scale=1.0, user-scalable=no" name="viewport" /> 
+    <meta charset="utf-8" /> 
+    <link rel="stylesheet" type="text/css" href="LosMochis.css">
+    <script src="./svg.js"></script>
+  </head>
+  <body>
+    <div id='buttons'>
+      <button name="zoomin" onclick="zoomIn()">Zoom in</button>
+      <button name="zoomout" onclick="zoomOut()">Zoom out</button>
+      <br />
+      <button name="connectlocal" onclick="connectLocal()">connect local</button>
+      <button name="connectpi" onclick="connectPi()">connect pi</button>
+      <button name="disconnectws" onclick="disconnectWS()">disconnect WS</button>
+      </div>
+    <div id="map-canvas"></div>
+    <div id="map-mask"><img src="mask.png" width="1080" height="1080"/> </div>
+   <script src="LosMochis2.js"></script>
+    <script> function initialize()
+    {
+      // ugly scope hack
+      initializemap();
+    }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyD2YKbGfu2sbJl0ap0NnHQiZhBrNvrpKX8&callback=initialize"
+    async defer></script>
+   <div id="container" style="position: absolute;top: 0px;left: 422px;">
+      <div id="circletext">
+      </div>
+    </div>
+ 
+    <div class="instructions">
+      <div class="spanish">
+      </div>
+      <div class="english">
+      </div>
+    </div> 
+ 
+    <div class="instructions" id="site1">
+      <img src="cedulas/Tilty 1.png" id="site1_img">
+    </div>
+    <div class="overview" id="site2">
+      <img src="cedulas/Tilty 2.png" id="site2_img">
+    </div>
+    <div class="overview" id="site3">
+      <img src="cedulas/Tilty 3.png" id="site3_img">
+    </div> 
+
+    <div class="overview" id="site4">
+      <img src="cedulas/Tilty 4.png" id="site4_img">
+    </div>  
+
+    <div class="state" id="site5">
+      <img src="cedulas/Tilty 5.png" id="site5_img">
+      <div class="site_name">Sinaloa</div>
+    </div>  
+
+
+    <div class="state" id="site6">
+      <img src="cedulas/Tilty 6.png" id="site6_img">
+      <div class="site_name">Ciudad de México</div>
+    </div>  
+
+    <div class="state"  id="site7">
+      <img src="cedulas/Tilty 7.png" id="site7_img">
+      <div class="site_name">Veracruz de Ignacio de la Llave</div>
+    </div>  
+
+    <div class="state"  id="site8">
+      <img src="cedulas/Tilty 8.png" id="site8_img">
+      <div class="site_name">Chihuahua</div>
+    </div>  
+
+    <div class="state"  id="site9">
+      <img src="cedulas/Tilty 9.png" id="site9_img">
+      <div class="site_name">Guerrero</div>
+    </div>  
+
+    <div class="overview"  id="site10">
+      <img src="cedulas/Tilty 10.png" id="site10_img">
+      
+    </div>  
+
+    <div class="county"  id="site11">
+      <img src="cedulas/Tilty 11.png" id="site11_img">
+      <div class="site_name">Ahome</div>
+    </div>  
+
+    <div class="county"  id="site12">
+      <img src="cedulas/Tilty 12.png" id="site12_img">
+      <div class="site_name">Mazatlán</div>
+    </div>  
+
+    <div class="county"  id="site13">
+      <img src="cedulas/Tilty 13.png" id="site13_img">
+      <div class="site_name">Culiacán</div>
+    </div>  
+
+    <div class="county"  id="site14">
+      <img src="cedulas/Tilty 14.png" id="site14_img">
+      <div class="site_name">Badiguarato</div>
+    </div>  
+
+    <div class="county"  id="site15">
+      <img src="cedulas/Tilty 15.png" id="site15_img">
+      <div class="site_name">Salvador Alvarado (Guamúchil)</div>
+    </div>  
+    </div>  
+
+    <div class="overview"  id="site16">
+      <img src="cedulas/Tilty 16.png" id="site16_img">
+    </div>  
+
+
+    <div class="city" id="site17">
+      <img src="cedulas/Tilty 17.png" id="site17_img">
+      <div class="site_name">La Central (Los Mochis)</div>
+    </div>  
+<ul id="messages"></ul>  </body>
+</html>
+
+
+
+
+
+
+
