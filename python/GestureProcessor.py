@@ -27,20 +27,16 @@ class SwitchGestureProcessor(GestureProcessor):
     def run(self):
         if self.sensor:
 #            print("switch status", self.sensor['switch'].status, self.sensor['switch'].pin)
-            if self.sensor['switch'].status:
+            if self.sensor.status:
                 print('actuating switch')
-                self.sensor['switch'].clear()
-                self.sensor['led'].on()
+                
                 self.action = { 'gesture': 'switchCode',
                         'vector': {
-                            'code': self.outchar
+                            'code': self.sensor.get_keycode()
                         }}
                 print(self.action)
                 return True
-            else:
-                #print('turn led off',repr(self.sensor['led']))
-                self.sensor['led'].off()
-                #print('turned led off')
+            
         return False
 
 
