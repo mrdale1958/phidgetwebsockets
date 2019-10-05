@@ -14,7 +14,7 @@ import logging
 import argparse
 from LED import LED
 from Switch import Switch
-from  LitSwitchData import LitSwitchData
+from  LitNWaySwitchData import LitNWaySwitchData
 from shutil import copyfile
 
 #Phidget specific imports
@@ -154,17 +154,14 @@ else:
     tiltdata=None
     
 litSwitches = {
-         'e': { 'led' : LED(18,config), 'switch': Switch(4) }, 
-         'c': { 'led' : LED(23,config), 'switch': Switch(17) }, 
-         'j': { 'led' : LED(24,config), 'switch': Switch(27) }, 
-         'k': { 'led' : LED(25,config), 'switch': Switch(22) }, 
-         's': { 'led' : LED(12,config), 'switch': Switch(5) } 
+         'e': { 'ledpin' : 18, 'switchpin': 4, 'LEDPullUpFlag': True, 'default': True }, 
+         'c': { 'ledpin' : 23, 'switchpin': 17, 'LEDPullUpFlag': True }, 
+         'j': { 'ledpin' : 24, 'switchpin': 27, 'LEDPullUpFlag': True }, 
+         'k': { 'ledpin' : 25, 'switchpin': 22, 'LEDPullUpFlag': True }, 
+         's': { 'ledpin' : 12, 'switchpin': 5, 'LEDPullUpFlag': True } 
     }
 switchData = {}
-for switch in ['e','c','j','k','s']:
-    languageSensor = { 'outChar' : switch,
-                                             'hardware': litSwitches[switch] }
-    switchData[switch] = LitSwitchData(config, languageSensor)
+languageSensor = LitNWaySwitchData(config,litSwitches)
         
 
 
@@ -192,11 +189,8 @@ async def tilt(websocket, path):
                     d = {'clientip': local_ip_address, 'user': 'pi' }
                     logger.info('sending test data: %s', "client went away=%s" % outbound_message, extra=d)
                     break           
-            for switch in switchData:
-                #logger.info('polling switches: %s', "switch=%s" % repr(switchData[switch].gestureProcessor), extra=d)
-
-                if (switchData[switch].gestureProcessor.run()):
-                    outbound_message = switchData[switch].gestureProcessor.nextAction()
+            if (languageSensor.gestureProcessor.run()):
+                    outbound_message = languageSensor.gestureProcessor.nextAction()
                     logger.info('sending switch data: %s', "switch nextAction=%s" % outbound_message, extra=d)
                     try:
                         await websocket.send(outbound_message)
