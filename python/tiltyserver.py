@@ -2,6 +2,7 @@
 
 #Websockets imports
 import asyncio
+from asyncio import AbstractEventLoop
 import datetime
 import random
 import websockets
@@ -189,14 +190,14 @@ async def tilt(websocket, path):
                     d = {'clientip': local_ip_address, 'user': 'pi' }
                     logger.info('sending test data: %s', "client went away=%s" % outbound_message, extra=d)
                     break           
-            if (languageSensor.gestureProcessor.run()):
+            if (languageSensor.gestureProcessor.run(logger)):
                     outbound_message = languageSensor.gestureProcessor.nextAction()
-                    logger.info('sending switch data: %s', "switch nextAction=%s" % outbound_message, extra=d)
-                    try:
-                        await websocket.send(outbound_message)
-                    except websockets.exceptions.ConnectionClosed:
-                        logger.info('sending switch data: %s', "client went away=%s" % outbound_message, extra=d)
-                        break
+ #                  logger.info('sending switch data: %s', "switch nextAction=%s" % outbound_message, extra=d)
+ #                  try:
+ #                      await websocket.send(outbound_message)
+ #                  except websockets.exceptions.ConnectionClosed:
+ #                      logger.info('sending switch data: %s', "client went away=%s" % outbound_message, extra=d)
+ #                      break
                 #else:
                     #logger.info('no data switches: %s', "switch=%s" % repr(switchData[switch]), extra=d)
                     
@@ -236,6 +237,7 @@ async def tilt(websocket, path):
 #start_server = websockets.serve(tilt, '10.21.48.122', 5678)
 start_server = websockets.serve(tilt, local_ip_address, server_port)
 asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().set_debug(True)
 try:
     asyncio.get_event_loop().run_forever()
 except:

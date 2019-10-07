@@ -1,5 +1,7 @@
 import json
+import logging
 import time
+
 
 class GestureProcessor:
     
@@ -22,20 +24,18 @@ class GestureProcessor:
 class SwitchGestureProcessor(GestureProcessor):
     def __init__(self,sensor,config):
         GestureProcessor.__init__(self,sensor,config)
-        self.outchar = config['outChar']
+#       self.outchar = config['outChar']
         
-    def run(self):
-        if self.sensor:
-#            print("switch status", self.sensor['switch'].status, self.sensor['switch'].pin)
-            if self.sensor.status:
-                print('actuating switch')
+    def run(self,logger):
+        if self.sensor.newState():
+           logger.info('actuating switch')
                 
-                self.action = { 'gesture': 'switchCode',
+           self.action = { 'gesture': 'switchCode',
                         'vector': {
                             'code': self.sensor.get_keycode()
                         }}
-                print(self.action)
-                return True
+           logger.info(repr(self.action))
+           return True
             
         return False
 

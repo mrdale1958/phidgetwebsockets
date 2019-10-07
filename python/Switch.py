@@ -1,10 +1,10 @@
 ### switches.py
 import RPi.GPIO as GPIO
-
+from LED import LED
 class Switch:
  
  
-    def __init__(self,switchPin,LEDPin,LEDPullUpFlag,key_code):
+    def __init__(self,switchPin,LEDPin,LEDPullUpFlag,key_code,callback_fn):
         self.pin = switchPin
         self.key_code = key_code
         GPIO.setmode(GPIO.BCM)
@@ -16,7 +16,7 @@ class Switch:
 
         GPIO.add_event_detect(self.pin, 
                                 GPIO.RISING, 
-                                callback=NWaySwitch.switch_detected, 
+                                callback=callback_fn, 
                                 bouncetime=200)
 
     def get_pin(self):
