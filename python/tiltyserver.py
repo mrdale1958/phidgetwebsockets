@@ -169,63 +169,69 @@ languageSensor = LitNWaySwitchData(config,litSwitches)
 testgp = None # TestHarnessGestureProcessor(None, config)
 
     
-async def tilt(websocket, path):
-    d = {'clientip': local_ip_address, 'user': 'pi', }
-    logger.info('Websocket connection made: %s', "tilt server %s port %d path %s" % (websocket.remote_address[0], websocket.remote_address[1], path), extra=d)
+async def tilty_table(websocket, path):
     if tiltdata:
         tiltdata.level_table()
+    outbound_messages = []
+    now = datetime.datetime.utcnow().isoformat() + 'Z'
+        #logger.info('polling %s', "hmmm %s" % "bar", extra=d)
+            
+    if (testgp and testgp.run()):
+        outbound_message = testgp.nextAction()
+        logger.info('sending test data: ', "testgp next action=%s" % outbound_message)
+        outbound_messages.append(outbound_message)
+    if (languageSensor and languageSensor.gestureProcessor.run(logger)):
+        outbound_message = languageSensor.gestureProcessor.nextAction()
+        logger.info('sending languageSensor data: ', "languageSensor next action=%s" % outbound_message, extra=d)
+        outbound_messages.append(outbound_message)
+    if (tiltdata and tiltdata.gestureProcessor.run()):
+        outbound_message = tiltdata.gestureProcessor.nextAction()
+        logger.info('sending tilt data: ', "tilt next action=%s" % outbound_message)
+        outbound_messages.append(outbound_message)
+
+    if (spindata and spindata.gestureProcessor.run()):
+        outbound_message = spindata.gestureProcessor.nextAction()
+        logger.info('sending spin data: ', "spin gp nextAction=%s" % outbound_message)
+        outbound_messages.append(outbound_message)
+    return(outbound_messages)
+
+async def consumer(message):
+        logger.info('got data from client: ', "spin gp nextAction=" % message)
+
+
+async def producer_handler(websocket, path):
+    d = {'clientip': local_ip_address, 'user': 'pi', }
+    logger.info('Websocket connection made: %s', "tilt server %s port %d path %s" % (websocket.remote_address[0], websocket.remote_address[1], path), extra=d)
+    while True:
+        message = await tilty_table()
+        d = {'clientip': local_ip_address, 'user': 'pi'}
+        logger.info('sending tilt data: %s', "tilt nextAction=%s" % outbound_message, extra=d)
+        except Exception:
+             logger.info('error sending tilt data: %s', "tilt nextAction=%s" % outbound_message, extra=d)
+        try:
+            await websocket.send(outbound_message)
+        except websockets.exceptions.ConnectionClosed:
+            d = {'clientip': local_ip_address, 'user': 'pi' }
+            logger.info('sending tilt data: %s', "client went away=%s" % outbound_message, extra=d)
+            break
+        await asyncio.sleep(config['tiltSampleRate'])
+
+async def consumer_handler(websocket, path):
+    async for message in websocket:
+        await consumer(message)
+
+async def handler(websocket, path):
     try:
-        logger.info('3 Websocket connection made: %s', "tilt server %s port %d path %s" % (websocket.remote_address[0], websocket.remote_address[1], path), extra=d)
-        logger.info('preparing for polling %s', "hmmm %s" % "foo", extra=d)
-        while True:
-            now = datetime.datetime.utcnow().isoformat() + 'Z'
-            #logger.info('polling %s', "hmmm %s" % "bar", extra=d)
-                
-            if (testgp and testgp.run()):
-                outbound_message = testgp.nextAction()
-                logger.info('sending test data: %s', "testgp next action=%s" % outbound_message, extra=d)
-                try:
-                    await websocket.send(outbound_message)
-                except websockets.exceptions.ConnectionClosed:
-                    d = {'clientip': local_ip_address, 'user': 'pi' }
-                    logger.info('sending test data: %s', "client went away=%s" % outbound_message, extra=d)
-                    break           
-            if (languageSensor.gestureProcessor.run(logger)):
-                    outbound_message = languageSensor.gestureProcessor.nextAction()
- #                  logger.info('sending switch data: %s', "switch nextAction=%s" % outbound_message, extra=d)
- #                  try:
- #                      await websocket.send(outbound_message)
- #                  except websockets.exceptions.ConnectionClosed:
- #                      logger.info('sending switch data: %s', "client went away=%s" % outbound_message, extra=d)
- #                      break
-                #else:
-                    #logger.info('no data switches: %s', "switch=%s" % repr(switchData[switch]), extra=d)
-                    
-            if (tiltdata and tiltdata.gestureProcessor.run()):
-                try:
-                    outbound_message = tiltdata.gestureProcessor.nextAction()
-                    d = {'clientip': local_ip_address, 'user': 'pi'}
-                    logger.info('sending tilt data: %s', "tilt nextAction=%s" % outbound_message, extra=d)
-                except Exception:
-                     logger.info('error sending tilt data: %s', "tilt nextAction=%s" % outbound_message, extra=d)
-                try:
-                    await websocket.send(outbound_message)
-                except websockets.exceptions.ConnectionClosed:
-                    d = {'clientip': local_ip_address, 'user': 'pi' }
-                    logger.info('sending tilt data: %s', "client went away=%s" % outbound_message, extra=d)
-                    break
-            if (spindata and spindata.gestureProcessor.run()):
-                outbound_message = spindata.gestureProcessor.nextAction()
-                d = {'clientip': local_ip_address, 'user': 'pi' }
-                logger.info('sending spin data: %s', "spin gp nextAction=%s" % outbound_message, extra=d)
-                try:
-                    await websocket.send(outbound_message)
-                except websockets.exceptions.ConnectionClosed:
-                    d = {'clientip': local_ip_address, 'user': 'pi' }
-                    logger.info('sending spin data: %s', "client went away=%s" % outbound_message, extra=d)
-                    break
-            #await websocket.send(json.dumps(now))
-            await asyncio.sleep(config['tiltSampleRate'])
+        consumer_task = asyncio.ensure_future(
+            consumer_handler(websocket, path))
+        producer_task = asyncio.ensure_future(
+            producer_handler(websocket, path))
+        done, pending = await asyncio.wait(
+            [consumer_task, producer_task],
+            return_when=asyncio.FIRST_COMPLETED,
+        )
+        for task in pending:
+            task.cancel()
     except  websockets.exceptions.ConnectionResetError:
         d = {'clientip': local_ip_address, 'user': 'pi', }
         logger.info('Websocket connection reset: %s', "tilt server %s port %d path %s" % (websocket.remote_address[0], websocket.remote_address[1], path), extra=d)
@@ -235,7 +241,8 @@ async def tilt(websocket, path):
 #start_server = websockets.serve(tilt, '127.0.0.1', 5678)
 #start_server = websockets.serve(tilt, '192.168.1.73', 5678)
 #start_server = websockets.serve(tilt, '10.21.48.122', 5678)
-start_server = websockets.serve(tilt, local_ip_address, server_port)
+#start_server = websockets.serve(tilt, local_ip_address, server_port)
+start_server = websockets.serve(handler, local_ip_address, server_port)
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().set_debug(True)
 try:

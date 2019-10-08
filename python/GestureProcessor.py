@@ -25,6 +25,12 @@ class SwitchGestureProcessor(GestureProcessor):
     def __init__(self,sensor,config):
         GestureProcessor.__init__(self,sensor,config)
 #       self.outchar = config['outChar']
+
+    def consume_external_data(self, message):
+        # {language: language_chr}
+        message_dict = json.loads(message)
+        if 'language' in message_dict:
+            NWaySwitch.consume_key(message_dict('language'))
         
     def run(self,logger):
         if self.sensor.newState():
