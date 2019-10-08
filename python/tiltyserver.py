@@ -169,51 +169,52 @@ languageSensor = LitNWaySwitchData(config,litSwitches)
 testgp = None # TestHarnessGestureProcessor(None, config)
 
     
-async def tilty_table(websocket, path):
+async def tilty_table():
     if tiltdata:
         tiltdata.level_table()
     outbound_messages = []
     now = datetime.datetime.utcnow().isoformat() + 'Z'
         #logger.info('polling %s', "hmmm %s" % "bar", extra=d)
-            
+    d = { "foo" : "bar" }        
     if (testgp and testgp.run()):
         outbound_message = testgp.nextAction()
-        logger.info('sending test data: ', "testgp next action=%s" % outbound_message)
+        logger.info('sending test data: %s', "testgp next action=%s" % outbound_message, extra=d)
         outbound_messages.append(outbound_message)
     if (languageSensor and languageSensor.gestureProcessor.run(logger)):
         outbound_message = languageSensor.gestureProcessor.nextAction()
-        logger.info('sending languageSensor data: ', "languageSensor next action=%s" % outbound_message, extra=d)
+        logger.info('sending languageSensor data: %s',
+                    "languageSensor next action=%s" % outbound_message, extra=d)
         outbound_messages.append(outbound_message)
     if (tiltdata and tiltdata.gestureProcessor.run()):
         outbound_message = tiltdata.gestureProcessor.nextAction()
-        logger.info('sending tilt data: ', "tilt next action=%s" % outbound_message)
+        logger.info('sending tilt data: %s', "tilt next action=%s" % outbound_message, extra=d)
         outbound_messages.append(outbound_message)
 
     if (spindata and spindata.gestureProcessor.run()):
         outbound_message = spindata.gestureProcessor.nextAction()
-        logger.info('sending spin data: ', "spin gp nextAction=%s" % outbound_message)
+        logger.info('sending spin data: %s', "spin gp nextAction=%s" % outbound_message, extra=d)
         outbound_messages.append(outbound_message)
     return(outbound_messages)
 
-async def consumer(message):
-        logger.info('got data from client: ', "spin gp nextAction=" % message)
+async def consumer(incoming_message):
+    d = {'clientip': local_ip_address, 'user': 'pi', }
+    logger.info('got data from client: %s', "message=%s" % incoming_message, extra=d)
 
 
 async def producer_handler(websocket, path):
     d = {'clientip': local_ip_address, 'user': 'pi', }
     logger.info('Websocket connection made: %s', "tilt server %s port %d path %s" % (websocket.remote_address[0], websocket.remote_address[1], path), extra=d)
     while True:
-        message = await tilty_table()
+        outbound_messages = await tilty_table()
         d = {'clientip': local_ip_address, 'user': 'pi'}
-        logger.info('sending tilt data: %s', "tilt nextAction=%s" % outbound_message, extra=d)
-        except Exception:
-             logger.info('error sending tilt data: %s', "tilt nextAction=%s" % outbound_message, extra=d)
-        try:
-            await websocket.send(outbound_message)
-        except websockets.exceptions.ConnectionClosed:
-            d = {'clientip': local_ip_address, 'user': 'pi' }
-            logger.info('sending tilt data: %s', "client went away=%s" % outbound_message, extra=d)
-            break
+        for outbound_message in outbound_messages:
+            logger.info('sending tilt data: %s', "tilt nextAction=%s" % outbound_message, extra=d)
+            try:
+                await websocket.send(outbound_message)
+            except websockets.exceptions.ConnectionClosed:
+                d = {'clientip': local_ip_address, 'user': 'pi' }
+                logger.info('sending tilt data: %s', "client went away=%s" % outbound_message, extra=d)
+                break
         await asyncio.sleep(config['tiltSampleRate'])
 
 async def consumer_handler(websocket, path):
@@ -221,6 +222,8 @@ async def consumer_handler(websocket, path):
         await consumer(message)
 
 async def handler(websocket, path):
+    d = {'clientip': local_ip_address, 'user': 'pi', }
+    logger.info('Websocket connection made: %s', "tilt server %s port %d path %s" % (websocket.remote_address[0], websocket.remote_address[1], path), extra=d)
     try:
         consumer_task = asyncio.ensure_future(
             consumer_handler(websocket, path))
