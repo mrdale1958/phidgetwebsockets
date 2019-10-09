@@ -81,8 +81,8 @@ class SpinData:
 
         d = {'clientip': "spinner", 'user':"encoderAttached"}
         SpinData._logger.info('Encoder Attached! %s', 'good news', extra=d)
-        d = { 'clientip': "spinner", 'user': "getMinPositionChangeTrigger %d getPositionChangeTrigger %d" %(SpinData._spinner.getMinPositionChangeTrigger(), SpinData._spinner.getPositionChangeTrigger())}
-        SpinData._logger.critical('Encoder setup: %s', "hmmm", extra=d)
+        #d = { 'clientip': "spinner", 'user': "getMinPositionChangeTrigger %d getPositionChangeTrigger %d" %(SpinData._spinner.getMinPositionChangeTrigger(), SpinData._spinner.getPositionChangeTrigger())}
+        #SpinData._logger.critical('Encoder setup: %s', "hmmm", extra=d)
 
     def encoderDetached(e):
         detached = e

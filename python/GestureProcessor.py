@@ -67,7 +67,7 @@ class SpinGestureProcessor(GestureProcessor):
                 retval = True
         return retval
 
-    def run(self):
+    def run(self,logger):
         if self.sensor and self.getSpin():
             self.action = { 'gesture': 'zoom',
                     'vector': {
@@ -75,6 +75,7 @@ class SpinGestureProcessor(GestureProcessor):
                     },
                     'id': self.requestCount }
             self.requestCount += 1
+            logger.info(repr(self.action))
             return True
         return False
 
@@ -86,7 +87,7 @@ class TiltGestureProcessor(GestureProcessor):
         self.Ytilt = 0.0
 
 
-    def getTilt(self):
+    def getTilt(self, logger):
         retval = False
         if self.sensor.components[0].size() and self.sensor.components[1].size():
             if self.config['swapXY']:
@@ -119,18 +120,20 @@ class TiltGestureProcessor(GestureProcessor):
                 self.Ytilt = 0.0
             # claculate the current tilt vector and put in self.Xtilt,self.Ytilt if not flat return true else false
             return retval
+        #logger.info("No tilt found %s,%s" % (repr(self.sensor.components[0].size()),repr(self.sensor.components[1].size())))
         return retval
     
     
-    def run(self):
+    def run(self,logger):
 # FSM looking for various possible gestures if after clocking the fsm there is a complete gesture return a dictionary describing the response to the gestureotherwise false
 
     # the most common gesture is a simple tilt which is defined as a delta from flat
     # 
-        if self.sensor and self.getTilt():
+        if self.sensor and self.getTilt(logger):
             self.action = { 'gesture': 'pan',
                   'vector': { 'x': self.Xtilt, 'y': self.Ytilt }
                         }
+            #logger.info(repr(self.action))
             return True 
         else:
             return False 
