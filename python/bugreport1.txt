@@ -1,0 +1,4 @@
+Ok, now the wall behavior is that pushing illuminates the language, but it's not sticky.
+And it'll only happen once, until you select another.  
+If I push English, all four off the rest come on.
+Then I get into a weird state where I can dismiss each of them.

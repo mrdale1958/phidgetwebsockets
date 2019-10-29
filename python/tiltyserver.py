@@ -84,8 +84,8 @@ parser.add_argument('--usePhidgets',
                     default=1,
                     help='useful for testing switches or other non-phidget sensors')
 
-parser.add_argument('--LEDpullUp',
-            type=int, dest='LEDpullUp',
+parser.add_argument('--LEDPullUp',
+            type=int, dest='LEDPullUp',
             default=1,
             help='logic for leds that go high or low')
 args = parser.parse_args()
@@ -124,7 +124,7 @@ config = {
     'flipY' : args.flipY,
     'flipZ' : args.flipZ,
     'swapXY' : args.swapXY,
-    'LEDpullUp' : args.LEDpullUp,
+    'LEDPullUp' : args.LEDPullUp,
 }
 
 if args.usePhidgets:
@@ -155,11 +155,11 @@ else:
     tiltdata=None
     
 litSwitches = {
-         'e': { 'ledpin' : 18, 'switchpin': 4, 'LEDPullUpFlag': True, 'default': True }, 
-         'c': { 'ledpin' : 23, 'switchpin': 17, 'LEDPullUpFlag': True }, 
-         'j': { 'ledpin' : 24, 'switchpin': 27, 'LEDPullUpFlag': True }, 
-         'k': { 'ledpin' : 25, 'switchpin': 22, 'LEDPullUpFlag': True }, 
-         's': { 'ledpin' : 12, 'switchpin': 5, 'LEDPullUpFlag': True } 
+         'e': { 'ledpin' : 18, 'switchpin': 4, 'LEDPullUpFlag': config['LEDPullUp'], 'default': True }, 
+         'c': { 'ledpin' : 23, 'switchpin': 17, 'LEDPullUpFlag': config['LEDPullUp'] }, 
+         'j': { 'ledpin' : 24, 'switchpin': 27, 'LEDPullUpFlag': config['LEDPullUp'] }, 
+         'k': { 'ledpin' : 25, 'switchpin': 22, 'LEDPullUpFlag': config['LEDPullUp'] }, 
+         's': { 'ledpin' : 12, 'switchpin': 5, 'LEDPullUpFlag': config['LEDPullUp'] } 
     }
 switchData = {}
 languageSensor = LitNWaySwitchData(config,litSwitches)

@@ -16,6 +16,7 @@ class LED:
         else:
             self.LEDOn = GPIO.LOW
             self.LEDOff = GPIO.HIGH
+        self.off()
         
     def on(self):
         GPIO.output(self.pin,self.LEDOn)

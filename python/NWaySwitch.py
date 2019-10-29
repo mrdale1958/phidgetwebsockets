@@ -3,48 +3,58 @@ import RPi.GPIO as GPIO
 from Switch import Switch
 class NWaySwitch:
  
-    _polesByPin = {}
-    _polesByKeyCode = {}
-    _currentPole = None
+    
  
     _state = False
     def __init__(self,nodes):
+        self.polesByPin = {}
+        self.polesByKeyCode = {}
+        self.currentPole = None
+        self.stateChanged = False
+
         for node in nodes:
-            switch = Switch(nodes[node]['switchpin'],
+            self.key_code = node
+            self.switch = Switch(nodes[node]['switchpin'],
                             nodes[node]['ledpin'],
                             nodes[node]['LEDPullUpFlag'],
-                            node, NWaySwitch.switch_detected)
-            NWaySwitch._polesByPin[nodes[node]['switchpin']] = switch
-            NWaySwitch._polesByKeyCode[node] = switch
+                            node, self.switch_detected)
+            self.polesByPin[nodes[node]['switchpin']] = self.switch
+            self.polesByKeyCode[node] = self.switch
             if 'default' in nodes[node]:
-               NWaySwitch.switch_detected(nodes[node]['switchpin'])
-    def newState(self):
-        if NWaySwitch._state:
-           NWaySwitch._state = False
-           return True
-        return False
-    def get_keycode(self):
-        return(NWaySwitch._currentPole.get_keycode())
+               self.switch_detected(nodes[node]['switchpin'])
 
-    @classmethod
-    def consume_key(cls, key_code):
-        if key_code == NWaySwitch._currentPole.get_keycode():
-            NWaySwitch._currentPole.LED.off()
+    
+    def newState(self):
+        if self.stateChanged:
+           self.stateChanged = False
+           return (True)
+        return (False)
+
+    def get_keycode(self):
+        if (NWaySwitch._currentPole):
+            return(NWaySwitch._currentPole.get_keycode())
+        else:
+            return(0)
+
+    def consume_key(self, key_code):
+        if self.currentPole && key_code != self.currentPole.get_keycode():
+            self.currentPole.off()
+            self.stateChanged = True
+         else:
             return
-        if key_code in NWaySwitch._polesByKeyCode:
-            NWaySwitch._currentPole = NWaySwitch._polesByKeyCode[key_code]
-            NWaySwitch._currentPole.LED.on()
-            NWaySwitch._state = True
+        if key_code in self.polesByKeyCode:
+            self.currentPole = self.polesByKeyCode[key_code]
+            self.currentPole.on()
 
         
-    @classmethod
-    def switch_detected(cls, pin):
-        if (NWaySwitch._currentPole):
-            if pin == NWaySwitch._currentPole.get_pin():
-                NWaySwitch._currentPole.LED.off()
+    def switch_detected(self, pin):
+        if (self.currentPole):
+            if pin != self.currentPole.get_pin():
+                self.currentPole.off()
+                self.stateChanged = True
+            else:
                 return
-        NWaySwitch._currentPole = NWaySwitch._polesByPin[pin]
-        NWaySwitch._currentPole.LED.on()
-        NWaySwitch._state = True
+        self.currentPole = self.polesByPin[pin]
+        self.currentPole.on()
         
     

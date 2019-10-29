@@ -24,3 +24,9 @@ class Switch:
 
     def get_keycode(self):
         return(self.key_code)
+
+    def on(self):
+        self.LED.on()
+
+    def off(self):
+        self.LED.off()
